@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+  "name": "PR-Hide-And-Seek",
+  "version": "1.0",
+
+  "description": "Automatically hide PR that have been approved",
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.github.com/*"],
+      "js": ["HideAndSeek.js"]
+    }
+  ]
+}
