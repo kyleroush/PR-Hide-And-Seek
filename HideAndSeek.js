@@ -14,7 +14,22 @@ function loadAllData() {
 
 //add the check boxes to each files files-acations class to make the file is completed or not
 function addCompleteAction() {
+  var actions = $('.file-header.js-file-header').querySelector('.file-actions')
+  for (var action in actions) {
+    action.appendChild(createButton())
+  }
+}
 
+//Create a checkBox
+function createCheckBox() {
+  var span = document.createElement('span')
+  var label = document.createElement('label')
+  var checkBox = document.createElement('input')
+  checkBox.querySelector('HideAndSeek')
+  checkBox.type = "checkBox"
+  label.innerText = "Completed"
+  span.appendChild(label)
+  label.appendChild(checkBox)
 }
 
 //This needs to save the data to the local storage
@@ -70,6 +85,3 @@ function initialize() {
 // add the button to all the files 
 
 }
-
-
-
