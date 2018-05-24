@@ -58,7 +58,7 @@ function clearPr() {
 
 //return the number for the pull request
 function getPullRequest() {
-  
+  $(".gh-header-number").innerText
 }
 
 initialize();
