@@ -61,7 +61,6 @@ function unCompleteFile(fileName) {
  */
 function hideCompletedFiles(fileMap) {
   var fileHeaderList = filterCompletedFiles(fileMap)
-  // document.body.style.border = "5px solid yellow";
 
   for (var fileHeader in fileHeaderList) {
     fileHeaderList[fileHeader].querySelector('.file-actions').querySelector('.btn-octicon.p-1.pr-2.js-details-target').click()
@@ -87,7 +86,6 @@ function filterCompletedFiles(fileMap) {
     var filePath = fileHeader.attributes["data-path"]
     if (fileMap[filePath.value] != undefined) {
       filteredFileHeaderList.push(fileHeader)
-      // document.body.style.border = "5px solid orange";
 
     }
   });
