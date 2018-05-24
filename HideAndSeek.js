@@ -37,13 +37,22 @@ function unCompleteFile(fileName) {
 }
 
 //hide the files
-function hideCompletedFiles(fileList) {
+function hideCompletedFiles(fileHeaderList) {
+  fileHeaderList.querySelector('.file-actions').querySelector('.btn-octicon.p-1.pr-2.js-details-target').click()
 
 }
 
 // check the files for if there is an update
 function filterCompletedFiles(fileMap) {
-
+  var fileHeaderList = $('.file-header.js-file-header')
+  var filteredFileHeaderList = []
+  for (var fileHeader in fileList) {
+    var filePath = fileHeader.attributes["data-path"]
+    if (fileMap[filePath] != undefined) {
+      filteredFileHeaderList.push(fileHeader)
+    }
+  }
+  return filteredFileHeaderList;
 }
 
 /* Clear all completed files for all pull request from the display/storage */
