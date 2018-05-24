@@ -63,6 +63,7 @@ function getPullRequest() {
 
 initialize();
 
+// The function called on set up the plugin
 function initialize() {
 // load the load all the data
 // hide the files
