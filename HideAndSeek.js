@@ -1,7 +1,6 @@
 
 /* display previously-saved stored notes on startup 
 should return a map in the structure
-
 {
 "#9(PR#)": {
   "files": {
