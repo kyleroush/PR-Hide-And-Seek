@@ -118,8 +118,7 @@ function initialize() {
 
   var tempMap = {"README.md":"sha"}
   hideCompletedFiles(tempMap)
-  // document.body.style.border = "5px solid red";
-// load the load all the data
-// hide the files
-// add the button to all the files
+  // load the load all the data
+  // hide the files
+  // add the button to all the files
 }
