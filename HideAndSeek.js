@@ -1,5 +1,5 @@
 
-/* display previously-saved stored notes on startup 
+/* display previously-saved stored notes on startup
 should return a map in the structure
 {
 "#9(PR#)": {
@@ -9,14 +9,16 @@ should return a map in the structure
 }
 */
 function loadAllData() {
-  
+
 }
 
 //add the check boxes to each files files-acations class to make the file is completed or not
 function addCompleteAction() {
-  var actions = $('.file-header.js-file-header').querySelector('.file-actions')
-  for (var action in actions) {
-    action.appendChild(createButton())
+
+  var headers = document.querySelectorAll('.file-header.js-file-header')
+  for (var header in headers) {
+    var action = headers[header].querySelector('.file-actions')
+    action.appendChild(createCheckBox())
   }
 }
 
@@ -30,6 +32,7 @@ function createCheckBox() {
   label.innerText = "Completed"
   span.appendChild(label)
   label.appendChild(checkBox)
+  return span;
 }
 
 //This needs to save the data to the local storage
@@ -48,7 +51,7 @@ function completeFile(fileName, sha) {
 
 //remove a file from the local storage
 function unCompleteFile(fileName) {
-  
+
 }
 
 //hide the files
@@ -80,8 +83,9 @@ initialize();
 
 // The function called on set up the plugin
 function initialize() {
+
+  addCompleteAction()
 // load the load all the data
 // hide the files
-// add the button to all the files 
-
+// add the button to all the files
 }
