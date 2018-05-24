@@ -51,14 +51,38 @@ function unCompleteFile(fileName) {
   
 }
 
-//hide the files
-function hideCompletedFiles(fileList) {
-
+/**
+ * Hide the files.
+ * fileHeaderList: The list of Html elements representing the files headers 
+ * Implentation: Click on the collasp button for each Html file header element passed in.
+ */
+function hideCompletedFiles(fileHeaderList) {
+  for (var fileHeader in fileHeaderList) {
+    fileHeader.querySelector('.file-actions').querySelector('.btn-octicon.p-1.pr-2.js-details-target').click()
+  }
 }
 
-// check the files for if there is an update
+// filter the files that have been stored
+/**
+ * Filter the list of Html file headers elements
+ * fileMap: The map of files names and commits
+ * example 
+ * {
+ *    "README.md" : sha...(commit),
+ *    ...
+ * }
+ */
+// TODO: check to see if this file has been updated
 function filterCompletedFiles(fileMap) {
-
+  var fileHeaderList = $('.file-header.js-file-header')
+  var filteredFileHeaderList = []
+  for (var fileHeader in fileList) {
+    var filePath = fileHeader.attributes["data-path"]
+    if (fileMap[filePath] != undefined) {
+      filteredFileHeaderList.push(fileHeader)
+    }
+  }
+  return filteredFileHeaderList;
 }
 
 /* Clear all completed files for all pull request from the display/storage */
