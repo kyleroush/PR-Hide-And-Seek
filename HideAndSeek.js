@@ -42,7 +42,8 @@ function hideCompletedFiles(fileHeaderList) {
 
 }
 
-// check the files for if there is an update
+// filter the files that have been stored
+// TODO: check to see if this file has been updated
 function filterCompletedFiles(fileMap) {
   var fileHeaderList = $('.file-header.js-file-header')
   var filteredFileHeaderList = []
