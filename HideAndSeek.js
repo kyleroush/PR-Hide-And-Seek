@@ -36,13 +36,27 @@ function unCompleteFile(fileName) {
   
 }
 
-//hide the files
+/**
+ * Hide the files.
+ * fileHeaderList: The list of Html elements representing the files headers 
+ * Implentation: Click on the collasp button for each Html file header element passed in.
+ */
 function hideCompletedFiles(fileHeaderList) {
-  fileHeaderList.querySelector('.file-actions').querySelector('.btn-octicon.p-1.pr-2.js-details-target').click()
-
+  for (var fileHeader in fileHeaderList) {
+    fileHeader.querySelector('.file-actions').querySelector('.btn-octicon.p-1.pr-2.js-details-target').click()
+  }
 }
 
 // filter the files that have been stored
+/**
+ * Filter the list of Html file headers elements
+ * fileMap: The map of files names and commits
+ * example 
+ * {
+ *    "README.md" : sha...(commit),
+ *    ...
+ * }
+ */
 // TODO: check to see if this file has been updated
 function filterCompletedFiles(fileMap) {
   var fileHeaderList = $('.file-header.js-file-header')
