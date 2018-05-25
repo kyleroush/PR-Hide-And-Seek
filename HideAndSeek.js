@@ -91,9 +91,9 @@ function createCheckBox(filePath, sha, checked) {
   var label = document.createElement('label');
   var checkBox = document.createElement('input');
   checkBox.addEventListener( 'click', function() {
+    this.parentElement.parentElement.parentElement.querySelector('.btn-octicon.p-1.pr-2.js-details-target').click();
+
       if(this.checked) {
-        // console.log(this)
-        this.parentElement.parentElement.parentElement.querySelector('.btn-octicon.p-1.pr-2.js-details-target').click();
         completeFile(checkBox.dataset.filePath, checkBox.dataset.sha);
       } else {
         unCompleteFile(checkBox.dataset.filePath);
