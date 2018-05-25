@@ -1,22 +1,35 @@
 
-//------------------Utils for all work flows
+//------------------Utils
 
+/**
+ * The id for the storage
+ */
 var localStorageKey = "seeker";
 
 //return the number for the pull request
+/**
+ * Get an id for this pull request
+ *
+ * Information needed for unique id:
+ *    which github instance is this on (host)
+ *    The the org/author
+ *    The Repo name
+ *    The pull request number
+ */
 function getPullRequestId() {
-  // $(".gh-header-number").innerText
   return window.location.hostname + window.location.pathname;
 }
 
-/* display previously-saved stored notes on startup
-should return a map in the structure
-{
-"#9(PR#)": {
-  "files": {
-    "README.md" : sha...(commit)
-  }
-}
+/**
+ * Retreive the data for the plugin
+ * should return a map in the structure
+ * {
+ *   "#9(PR#)": {
+ *     "files": {
+ *       "README.md" : sha...(commit)
+ *     }
+ *   }
+ * }
 */
 function loadData() {
   var data = JSON.parse(localStorage.getItem(localStorageKey));
@@ -26,27 +39,37 @@ function loadData() {
     data[getPullRequestId()]['files'] = {};
     localStorage.setItem(data);
   }
-  return data[getPullRequestId()];
+  return data;
 }
 
 //----------------------Unused utils
-/* Clear all completed files for all pull request from the display/storage */
+// to be used when testing or when a setting page is created
+
+/**
+ * Clear all files for all pull request from the storage
+ */
 function clearAll() {
   localStorage.removeItem(localStorageKey);
 }
 
-/* Clear all completed files for this pull request from the display/storage */
+/**
+ * Clear all completed files for this pull request from the storage
+ */
+ //TODO: Go an uncheck any checked files.
 function clearPr() {
-  var map = JSON.parse(localStorage.getItem(localStorageKey));
+  var map = loadData();
   map[getPullRequestId()] = undefined;
   localStorage.setItem(localStorageKey, JSON.stringify(map));
 
 }
 
+//---------------------Complete button
 
-
-//-----------------------add button
 //add the check boxes to each files files-acations class to make the file is completed or not
+/**
+ * Add an an action to complete a file on each file.
+ */
+ //TODO: Add the sha to the check box.
 function addCompleteAction() {
 
   var headers = document.querySelectorAll('.file-header.js-file-header');
@@ -56,7 +79,9 @@ function addCompleteAction() {
   });
 }
 
-//Create a checkBox
+/**
+ * Create an instance of the checkbox to complete a file.
+ */
 function createCheckBox(filePath, sha) {
   var span = document.createElement('span');
   var label = document.createElement('label');
@@ -80,42 +105,44 @@ function createCheckBox(filePath, sha) {
   return span;
 }
 
-//This needs to save the data to the local storage
-//should write in this structure
-/*
-{
-"#9(PR#)": {
-  "files": {
-    "README.md" : sha...(commit)
-  }
-}
+/**
+ * Add the compelted file to the collection of comleted files stored
+ * store in the format of
+ * {
+ * "#9(PR#)": {
+ *   "files": {
+ *     "README.md" : sha...(commit)
+ *     }
+ *   }
+ * }
 */
 function completeFile(fileName, sha) {
-  var map = JSON.parse(localStorage.getItem(localStorageKey));
-  if (map == undefined) {
-    map = {};
-    map[getPullRequestId()] = {};
-    map[getPullRequestId()]['files'] = {};
-  }
+  var map = loadData();
   map[getPullRequestId()]['files'][fileName] = sha;
   localStorage.setItem(localStorageKey, JSON.stringify(map));
 }
 
-//remove a file from the local storage
+
+/**
+ * Remove the compelted file to the collection of comleted files stored
+ * store in the format of
+ * {
+ * "#9(PR#)": {
+ *   "files": {
+ *     "README.md" : sha...(commit)
+ *     }
+ *   }
+ * }
+*/
 function unCompleteFile(fileName) {
-  var map = JSON.parse(localStorage.getItem(localStorageKey));
-  if (map == undefined) {
-    map = {};
-    map[getPullRequestId()] = {};
-    map[getPullRequestId()]['files'] = {};
-  }
+  var map = loadData();
   map[getPullRequestId()]['files'][fileName] = undefined;
   localStorage.setItem(localStorageKey, JSON.stringify(map));
-
 }
 
 
-//----------------------------------Hide Files
+//---------------------------------- Hide Files
+
 /**
  * Hide the files.
  * fileHeaderList: The list of Html elements representing the files headers
@@ -163,5 +190,5 @@ initialize();
 function initialize() {
 
   addCompleteAction();
-  hideCompletedFiles(loadData()["files"]);
+  hideCompletedFiles(loadData()[getPullRequestId()]["files"]);
 }
