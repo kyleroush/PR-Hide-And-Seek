@@ -72,19 +72,20 @@ function clearPr() {
  * Add an an action to complete a file on each file.
  */
  //TODO: Add the sha to the check box.
-function addCompleteAction() {
+function addCompleteAction(files) {
 
   var headers = document.querySelectorAll('.file-header.js-file-header');
   headers.forEach(function(headers) {
     var action = headers.querySelector('.file-actions');
-    action.appendChild(createCheckBox(headers.attributes["data-path"].value, "2"));
+    var filePath = headers.attributes["data-path"].value
+    action.appendChild(createCheckBox(filePath, "2", files[filePath] != undefined));
   });
 }
 
 /**
  * Create an instance of the checkbox to complete a file.
  */
-function createCheckBox(filePath, sha) {
+function createCheckBox(filePath, sha, checked) {
   var span = document.createElement('span');
   var label = document.createElement('label');
   var checkBox = document.createElement('input');
@@ -101,6 +102,7 @@ function createCheckBox(filePath, sha) {
   checkBox.dataset.sha = sha;
   checkBox.querySelector('HideAndSeek');
   checkBox.type = "checkBox";
+  checkBox.checked = checked;
   label.innerText = "Completed";
   span.appendChild(label);
   label.appendChild(checkBox);
@@ -190,7 +192,7 @@ initialize();
 
 // The function called on set up the plugin
 function initialize() {
-
-  addCompleteAction();
-  hideCompletedFiles(loadData()[getPullRequestId()]["files"]);
+  var files = loadData()[getPullRequestId()]["files"];
+  addCompleteAction(files);
+  hideCompletedFiles(files);
 }
