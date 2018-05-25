@@ -57,7 +57,7 @@ function clearAll() {
 /**
  * Clear all completed files for this pull request from the storage
  */
- //TODO: Go an uncheck any checked files.
+ //TODO: uncheck any checked files.
 function clearPr() {
   var map = loadData();
   map[getPullRequestId()] = undefined;
@@ -78,7 +78,8 @@ function addCompleteAction(files) {
   headers.forEach(function(headers) {
     var action = headers.querySelector('.file-actions');
     var filePath = headers.attributes["data-path"].value
-    action.appendChild(createCheckBox(filePath, "2", files[filePath] != undefined));
+    var sha = sha
+    action.appendChild(createCheckBox(filePath, sha, files[filePath] != undefined));
   });
 }
 
@@ -91,9 +92,9 @@ function createCheckBox(filePath, sha, checked) {
   var checkBox = document.createElement('input');
   checkBox.addEventListener( 'click', function() {
       if(this.checked) {
+        // console.log(this)
+        this.parentElement.parentElement.parentElement.querySelector('.btn-octicon.p-1.pr-2.js-details-target').click();
         completeFile(checkBox.dataset.filePath, checkBox.dataset.sha);
-        document.body.style.border = "5px solid green";
-
       } else {
         unCompleteFile(checkBox.dataset.filePath);
       }
@@ -102,7 +103,7 @@ function createCheckBox(filePath, sha, checked) {
   checkBox.dataset.sha = sha;
   checkBox.querySelector('HideAndSeek');
   checkBox.type = "checkBox";
-  checkBox.checked = checked;
+  // checkBox.checked = checked;
   label.innerText = "Completed";
   span.appendChild(label);
   label.appendChild(checkBox);
