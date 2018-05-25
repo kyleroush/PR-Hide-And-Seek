@@ -1,5 +1,13 @@
 
+//------------------Utils for all work flows
+
 var localStorageKey = "seeker"
+
+//return the number for the pull request
+function getPullRequestId() {
+  // $(".gh-header-number").innerText
+  return window.location.hostname + window.location.pathname;
+}
 
 /* display previously-saved stored notes on startup
 should return a map in the structure
@@ -10,16 +18,34 @@ should return a map in the structure
   }
 }
 */
-function loadAllData() {
+function loadData() {
   var data = JSON.parse(localStorage.getItem(localStorageKey));
-  if(getPullRequestId() == undefined) {
+  if(data == undefined) {
     data = {}
     data[getPullRequestId()] = {}
     data[getPullRequestId()]['files'] = {}
+    localStorage.setItem(data)
   }
-  return data;
+  return data[getPullRequestId()];
 }
 
+//----------------------Unused utils
+/* Clear all completed files for all pull request from the display/storage */
+function clearAll() {
+  localStorage.removeItem(localStorageKey)
+}
+
+/* Clear all completed files for this pull request from the display/storage */
+function clearPr() {
+  var map = JSON.parse(localStorage.getItem(localStorageKey))
+  map[getPullRequestId()] = undefined
+  localStorage.setItem(localStorageKey, JSON.stringify(map));
+
+}
+
+
+
+//-----------------------add button
 //add the check boxes to each files files-acations class to make the file is completed or not
 function addCompleteAction() {
 
@@ -88,10 +114,8 @@ function unCompleteFile(fileName) {
 
 }
 
-function onCheck(element) {
-  document.body.style.border = "5px solid red";
-}
 
+//----------------------------------Hide Files
 /**
  * Hide the files.
  * fileHeaderList: The list of Html elements representing the files headers
@@ -130,24 +154,8 @@ function filterCompletedFiles(fileMap) {
   return filteredFileHeaderList;
 }
 
-/* Clear all completed files for all pull request from the display/storage */
-function clearAll() {
 
-}
-
-/* Clear all completed files for this pull request from the display/storage */
-function clearPr() {
-  var map = JSON.parse(localStorage.getItem(localStorageKey))
-  map[getPullRequestId()] = undefined
-  localStorage.setItem(localStorageKey, JSON.stringify(map));
-
-}
-
-//return the number for the pull request
-function getPullRequestId() {
-  // $(".gh-header-number").innerText
-  return window.location.hostname + window.location.pathname;
-}
+//----------------------- Start up
 
 initialize();
 
@@ -155,10 +163,5 @@ initialize();
 function initialize() {
 
   addCompleteAction()
-
-  console.log(loadAllData()[getPullRequestId()]["files"]);
-  hideCompletedFiles(loadAllData()[getPullRequestId()]["files"])
-  // load the load all the data
-  // hide the files
-  // add the button to all the files
+  hideCompletedFiles(loadData()["files"])
 }
