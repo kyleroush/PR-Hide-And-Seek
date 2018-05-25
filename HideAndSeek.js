@@ -35,9 +35,11 @@ function loadData() {
   var data = JSON.parse(localStorage.getItem(localStorageKey));
   if(data == undefined) {
     data = {};
+  }
+  if (data[getPullRequestId()] == undefined) {
     data[getPullRequestId()] = {};
     data[getPullRequestId()]['files'] = {};
-    localStorage.setItem(data);
+    localStorage.setItem(localStorageKey, JSON.stringify(data));
   }
   return data;
 }
