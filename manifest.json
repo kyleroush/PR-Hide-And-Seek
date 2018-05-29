@@ -1,0 +1,19 @@
+{
+
+  "description": "Add the ability to remeber completes files to a github pr.",
+  "manifest_version": 2,
+  "name": "Hide and Seek",
+  "version": "1.0",
+  "homepage_url": "https://github.com/kyleroush/PR-Hide-And-Seek/",
+
+  "permissions": [
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["HideAndSeek.js"]
+    }
+  ]
+
+}
