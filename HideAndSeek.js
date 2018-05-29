@@ -57,12 +57,13 @@ function clearAll() {
 /**
  * Clear all completed files for this pull request from the storage
  */
- //TODO: uncheck any checked files.
 function clearPr() {
   var map = loadData();
   map[getPullRequestId()] = undefined;
   localStorage.setItem(localStorageKey, JSON.stringify(map));
-
+  document.querySelectorAll('.HideAndSeek').forEach(function(checkBox) {
+    checkBox.checked = false;
+  });
 }
 
 //---------------------Complete button
@@ -71,14 +72,17 @@ function clearPr() {
 /**
  * Add an an action to complete a file on each file.
  */
- //TODO: Add the sha to the check box.
 function addCompleteAction(files) {
 
   var headers = document.querySelectorAll('.file-header.js-file-header');
-  headers.forEach(function(headers) {
-    var action = headers.querySelector('.file-actions');
-    var filePath = headers.attributes["data-path"].value
-    var sha = sha
+  headers.forEach(function(header) {
+    var action = header.querySelector('.file-actions');
+    if (action.querySelectorAll('.HideAndSeekSpan').length != 0) {
+      //This file header already has a span
+      return ;
+    }
+    var filePath = header.attributes["data-path"].value
+    var sha = getSha(header);
     action.appendChild(createCheckBox(filePath, sha, files[filePath] != undefined));
   });
 }
@@ -88,11 +92,11 @@ function addCompleteAction(files) {
  */
 function createCheckBox(filePath, sha, checked) {
   var span = document.createElement('span');
+  span.classList.add('HideAndSeekSpan')
   var label = document.createElement('label');
   var checkBox = document.createElement('input');
   checkBox.addEventListener( 'click', function() {
-    this.parentElement.parentElement.parentElement.querySelector('.btn-octicon.p-1.pr-2.js-details-target').click();
-
+    collasp(this.parentElement.parentElement.parentElement, this.checked)
       if(this.checked) {
         completeFile(checkBox.dataset.filePath, checkBox.dataset.sha);
       } else {
@@ -103,11 +107,26 @@ function createCheckBox(filePath, sha, checked) {
   checkBox.dataset.sha = sha;
   checkBox.querySelector('HideAndSeek');
   checkBox.type = "checkBox";
-  // checkBox.checked = checked;
+  checkBox.checked = checked;
   label.innerText = "Completed";
   span.appendChild(label);
   label.appendChild(checkBox);
   return span;
+}
+
+function collasp(header, toHide) {
+  button = header.querySelector('.btn-octicon.p-1.pr-2.js-details-target');
+  if (toHide == (button.attributes['aria-expanded'].value === 'true')) {
+    button.click();
+  }
+}
+
+/**
+ * Get the sha for a file
+ */
+// TODO: need to implement this method
+function getSha(header) {
+  return "1";
 }
 
 /**
@@ -157,7 +176,7 @@ function hideCompletedFiles(fileMap) {
   var fileHeaderList = filterCompletedFiles(fileMap);
 
   for (var fileHeader in fileHeaderList) {
-    fileHeaderList[fileHeader].querySelector('.file-actions').querySelector('.btn-octicon.p-1.pr-2.js-details-target').click();
+    collasp(fileHeaderList[fileHeader].querySelector('.file-actions'), true)
   }
 }
 
@@ -171,7 +190,6 @@ function hideCompletedFiles(fileMap) {
  *    ...
  * }
  */
-// TODO: check to see if this file has been updated
 function filterCompletedFiles(fileMap) {
   var fileHeaderList = document.querySelectorAll('.file-header.js-file-header');
   var filteredFileHeaderList = [];
@@ -188,12 +206,74 @@ function filterCompletedFiles(fileMap) {
 
 
 //----------------------- Start up
-
-initialize();
-
 // The function called on set up the plugin
 function initialize() {
   var files = loadData()[getPullRequestId()]["files"];
   addCompleteAction(files);
   hideCompletedFiles(files);
 }
+
+
+
+(function() {
+  "use strict";
+
+  // This following code is taken from
+  // https://github.com/thieman/github-selfies/blob/master/chrome/selfie.js
+  var allowedPaths = [
+    /github.com\/[\w\-]+\/[\w\-]+\/pull\/\d+/
+  ];
+
+  // Inject the code from fn into the page, in an IIFE.
+  function inject(fn) {
+    var script = document.createElement('script');
+    var parent = document.documentElement;
+    script.textContent = '('+ fn +')();';
+    parent.appendChild(script);
+    parent.removeChild(script);
+  }
+
+  // Post a message whenever history.pushState is called. GitHub uses
+  // pushState to implement page transitions without full page loads.
+  // This needs to be injected because content scripts run in a sandbox.
+  inject(function() {
+    var pushState = history.pushState;
+    history.pushState = function on_pushState() {
+      window.postMessage('extension:pageUpdated', '*');
+      return pushState.apply(this, arguments);
+    };
+    var replaceState = history.replaceState;
+    history.replaceState = function on_replaceState() {
+      window.postMessage('extension:pageUpdated', '*');
+      return replaceState.apply(this, arguments);
+    };
+  });
+
+  // Do something when the extension is loaded into the page,
+  // and whenever we push/pop new pages.
+  window.addEventListener("message", function(event) {
+    if (event.data === 'extension:pageUpdated') {
+      initialize();
+    }
+  });
+
+  window.addEventListener("popstate", load);
+  initialize();
+
+  // End of code from https://github.com/thieman/github-selfies/blob/master/chrome/selfie.js
+
+  function load() {
+    chrome.runtime.sendMessage({action: 'load'}, function(response) {
+      initialize();
+    });
+  }
+
+  function any(array, predicate) {
+    for (var i = 0; i < array.length; i++) {
+      if (predicate(array[i])) {
+        return true;
+      }
+    }
+    return false;
+  }
+})();
