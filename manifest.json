@@ -1,6 +1,6 @@
 {
 
-  "description": "Add the ability to remeber completes files to a github pr.",
+  "description": "Add the ability to remember completes files to a github pr.",
   "manifest_version": 2,
   "name": "Hide and Seek",
   "version": "1.0",
