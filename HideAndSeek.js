@@ -211,6 +211,25 @@ function initialize() {
   var files = loadData()[getPullRequestId()]["files"];
   addCompleteAction(files);
   hideCompletedFiles(files);
+  var observer = new MutationObserver(function (mutations) {
+
+    mutations.forEach(function (mutation) {
+      var fileActionDiv = mutation.target.querySelector(".file-actions");
+      if (fileActionDiv != null) {
+        initialize()
+
+      }
+    });
+  });
+  var config = {
+    childList: true,
+    characterData: true,
+    subtree: true
+  };
+
+  // pass in the target node, as well as the observer options
+  observer.observe(document.querySelector('#files'), config);
+
 }
 
 
