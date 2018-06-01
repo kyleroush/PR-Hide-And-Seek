@@ -212,10 +212,8 @@ function initialize() {
   addCompleteAction(files);
   hideCompletedFiles(files);
   var observer = new MutationObserver(function (mutations) {
-    // console.log(mutations);
 
     mutations.forEach(function (mutation) {
-      // console.log(mutation);
       var fileActionDiv = mutation.target.querySelector(".file-actions");
       if (fileActionDiv != null) {
         initialize()
@@ -224,7 +222,6 @@ function initialize() {
     });
   });
   var config = {
-    // attributes: true,
     childList: true,
     characterData: true,
     subtree: true
