@@ -211,6 +211,25 @@ function initialize() {
   var files = loadData()[getPullRequestId()]["files"];
   addCompleteAction(files);
   hideCompletedFiles(files);
+  var observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+      console.log(mutation);
+      if (mutation.target.querySelector(".file-actions") != null) {
+        initialize()
+
+      }
+    });
+  });
+  var config = {
+    attributes: true,
+    childList: true,
+    characterData: true,
+    subtree: true
+  };
+
+  // pass in the target node, as well as the observer options
+  observer.observe(document.querySelector('#js-repo-pjax-container'), config);
+
 }
 
 
