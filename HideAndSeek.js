@@ -1,3 +1,9 @@
+function hasBeenUpdate(fileMap, fileHeader) {
+  var sha = getSha(fileHeader)
+  var filePath = fileHeader.attributes["data-path"];
+  return fileMap[filePath.value] == sha;
+}
+
 
 //------------------Utils
 
@@ -94,7 +100,8 @@ function addComppleteActionToHeader(header, files) {
   }
   var filePath = header.attributes["data-path"].value
   var sha = getSha(header);
-  action.appendChild(createCheckBox(filePath, sha, files[filePath] != undefined));
+  var checked = files[filePath] != undefined && hasBeenUpdate(files, header)
+  action.appendChild(createCheckBox(filePath, sha, checked));
 }
 
 
@@ -135,9 +142,10 @@ function collapse(header, toHide) {
 /**
  * Get the sha for a file
  */
-// TODO: need to implement this method
 function getSha(header) {
-  return "1";
+  var path = header.querySelector('.file-actions').querySelector('.btn.btn-sm.tooltipped.tooltipped-nw').attributes.href;
+  var regex = /blob\/[\w\-]+\//;
+  return path.value.match(regex)[0].split('/')[1];
 }
 
 /**
@@ -185,10 +193,11 @@ function unCompleteFile(fileName) {
  */
 function hideCompletedFiles(fileMap, headers) {
   var fileHeaderList = filterCompletedFiles(fileMap, headers);
-
-  for (var fileHeader in fileHeaderList) {
-    collapse(fileHeaderList[fileHeader].querySelector('.file-actions'), true)
-  }
+  fileHeaderList.forEach(function(fileHeader) {
+    if (hasBeenUpdate(fileMap, fileHeader)) {
+      collapse(fileHeader.querySelector('.file-actions'), true)
+    }
+  })
 }
 
 // filter the files that have been stored
@@ -218,30 +227,11 @@ function filterCompletedFiles(fileMap, headers) {
 //----------------------- Start up
 // The function called on set up the plugin
 function initialize() {
-  var files = loadData()[getPullRequestId()]["files"];
-  addCompleteAction(files);
-  hideCompletedFiles(files);
-  var observer = new MutationObserver(function (mutations) {
-
-    mutations.forEach(function (mutation) {
-      var fileActionDiv = mutation.target.querySelector(".file-actions");
-      if (fileActionDiv != null) {
-        initialize()
-
-      }
-    });
-  });
-  var config = {
-    childList: true,
-    characterData: true,
-    subtree: true
-  };
-
-  // pass in the target node, as well as the observer options
-  observer.observe(document.querySelector('#files'), config);
-
+  var filesCompleted = loadData()[getPullRequestId()]["files"];
+  var fileHeaders = document.querySelectorAll('.file-header')
+  addCompleteAction(filesCompleted, fileHeaders);
+  hideCompletedFiles(filesCompleted, fileHeaders);
 }
-
 
 
 (function() {
@@ -301,7 +291,6 @@ function initialize() {
           var fileActionDiv = mutation.target.querySelector(".file-actions");
           if (fileActionDiv != null) {
             initialize();
-
           }
         });
       });
@@ -312,7 +301,10 @@ function initialize() {
       };
 
       // pass in the target node, as well as the observer options
-      observer.observe(document.querySelector('#files'), config);
+      var files = document.querySelector('#files');
+      if (files != null) {
+        observer.observe(files, config);
+      }
     });
   }
 
