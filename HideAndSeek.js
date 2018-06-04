@@ -1,3 +1,32 @@
+function reportingBar() {
+  var sideBar = document.querySelector('#partial-discussion-sidebar');
+  if(sideBar != null && sideBar.querySelector('.HideAndSeekSpan') == null) {
+    var reportdiv = document.createElement('div');
+    reportdiv.className = 'discussion-sidebar-item HideAndSeekSpan';
+    var entireBar = document.createElement('div');
+    entireBar.style.width = "100%"
+    entireBar.style.backgroundColor = "#ddd"
+    entireBar.style.height = "15px"
+    var completeBar = document.createElement('div');
+    completeBar.style.height = "15px"
+    completeBar.style.backgroundColor = "#4CAF50"
+    var divHeader = document.createElement('div');
+    divHeader.className = 'discussion-sidebar-heading text-bold';
+    divHeader.innerText = "Completeion %";
+    reportdiv.appendChild(divHeader);
+    reportdiv.appendChild(entireBar);
+    entireBar.appendChild(completeBar);
+    sideBar.appendChild(reportdiv)
+
+    var files = loadData()[getPullRequestId()]["files"];
+    // var fileHeaders = document.querySelectorAll('.file-header');
+    var completedCount = Object.keys(files).length;
+    var totalCount = document.querySelector('#files_tab_counter').innerText;
+    var width = completedCount/totalCount;
+    completeBar.style.width = width*100 + "%";
+  }
+}
+
 function hasBeenUpdate(fileMap, fileHeader) {
   var sha = getSha(fileHeader)
   var filePath = fileHeader.attributes["data-path"];
@@ -23,7 +52,7 @@ var localStorageKey = "seeker";
  *    The pull request number
  */
 function getPullRequestId() {
-  return window.location.hostname + window.location.pathname;
+  return window.location.hostname + window.location.pathname.replace("/files", "");
 }
 
 /**
@@ -227,10 +256,14 @@ function filterCompletedFiles(fileMap, headers) {
 //----------------------- Start up
 // The function called on set up the plugin
 function initialize() {
-  var filesCompleted = loadData()[getPullRequestId()]["files"];
-  var fileHeaders = document.querySelectorAll('.file-header')
-  addCompleteAction(filesCompleted, fileHeaders);
-  hideCompletedFiles(filesCompleted, fileHeaders);
+  reportingBar();
+
+  if (document.querySelector('#files') != null) {
+    var filesCompleted = loadData()[getPullRequestId()]["files"];
+    var fileHeaders = document.querySelectorAll('.file-header')
+    addCompleteAction(filesCompleted, fileHeaders);
+    hideCompletedFiles(filesCompleted, fileHeaders);
+  }
 }
 
 
