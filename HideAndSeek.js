@@ -194,8 +194,6 @@ function unCompleteFile(fileName) {
 function hideCompletedFiles(fileMap, headers) {
   var fileHeaderList = filterCompletedFiles(fileMap, headers);
   fileHeaderList.forEach(function(fileHeader) {
-    var sha = getSha(fileHeader)
-    var filePath = fileHeader.attributes["data-path"];
     if (hasBeenUpdate(fileMap, fileHeader)) {
       collapse(fileHeader.querySelector('.file-actions'), true)
     }
