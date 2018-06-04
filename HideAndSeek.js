@@ -44,6 +44,14 @@ function loadData() {
   return data;
 }
 
+function readFiles() {
+
+}
+
+function writeFiles() {
+
+}
+
 //----------------------Unused utils
 // to be used when testing or when a setting page is created
 
@@ -72,20 +80,23 @@ function clearPr() {
 /**
  * Add an an action to complete a file on each file.
  */
-function addCompleteAction(files) {
-
-  var headers = document.querySelectorAll('.file-header.js-file-header');
+function addCompleteAction(files, headers) {
   headers.forEach(function(header) {
-    var action = header.querySelector('.file-actions');
-    if (action.querySelectorAll('.HideAndSeekSpan').length != 0) {
-      //This file header already has a span
-      return ;
-    }
-    var filePath = header.attributes["data-path"].value
-    var sha = getSha(header);
-    action.appendChild(createCheckBox(filePath, sha, files[filePath] != undefined));
+    addComppleteActionToHeader(header, files)
   });
 }
+
+function addComppleteActionToHeader(header, files) {
+  var action = header.querySelector('.file-actions');
+  if (action.querySelectorAll('.HideAndSeekSpan').length != 0) {
+    //This file header already has a complete button
+    return ;
+  }
+  var filePath = header.attributes["data-path"].value
+  var sha = getSha(header);
+  action.appendChild(createCheckBox(filePath, sha, files[filePath] != undefined));
+}
+
 
 /**
  * Create an instance of the checkbox to complete a file.
@@ -96,7 +107,7 @@ function createCheckBox(filePath, sha, checked) {
   var label = document.createElement('label');
   var checkBox = document.createElement('input');
   checkBox.addEventListener( 'click', function() {
-    collasp(this.parentElement.parentElement.parentElement, this.checked)
+    collapse(this.parentElement.parentElement.parentElement, this.checked)
       if(this.checked) {
         completeFile(checkBox.dataset.filePath, checkBox.dataset.sha);
       } else {
@@ -114,7 +125,7 @@ function createCheckBox(filePath, sha, checked) {
   return span;
 }
 
-function collasp(header, toHide) {
+function collapse(header, toHide) {
   button = header.querySelector('.btn-octicon.p-1.pr-2.js-details-target');
   if (toHide == (button.attributes['aria-expanded'].value === 'true')) {
     button.click();
@@ -170,13 +181,13 @@ function unCompleteFile(fileName) {
 /**
  * Hide the files.
  * fileHeaderList: The list of Html elements representing the files headers
- * Implentation: Click on the collasp button for each Html file header element passed in.
+ * Implentation: Click on the collapse button for each Html file header element passed in.
  */
-function hideCompletedFiles(fileMap) {
-  var fileHeaderList = filterCompletedFiles(fileMap);
+function hideCompletedFiles(fileMap, headers) {
+  var fileHeaderList = filterCompletedFiles(fileMap, headers);
 
   for (var fileHeader in fileHeaderList) {
-    collasp(fileHeaderList[fileHeader].querySelector('.file-actions'), true)
+    collapse(fileHeaderList[fileHeader].querySelector('.file-actions'), true)
   }
 }
 
@@ -190,11 +201,10 @@ function hideCompletedFiles(fileMap) {
  *    ...
  * }
  */
-function filterCompletedFiles(fileMap) {
-  var fileHeaderList = document.querySelectorAll('.file-header.js-file-header');
+function filterCompletedFiles(fileMap, headers) {
   var filteredFileHeaderList = [];
 
-  fileHeaderList.forEach(function(fileHeader) {
+  headers.forEach(function(fileHeader) {
     var filePath = fileHeader.attributes["data-path"];
     if (fileMap[filePath.value] != undefined) {
       filteredFileHeaderList.push(fileHeader);
@@ -211,25 +221,6 @@ function initialize() {
   var files = loadData()[getPullRequestId()]["files"];
   addCompleteAction(files);
   hideCompletedFiles(files);
-  var observer = new MutationObserver(function (mutations) {
-
-    mutations.forEach(function (mutation) {
-      var fileActionDiv = mutation.target.querySelector(".file-actions");
-      if (fileActionDiv != null) {
-        initialize()
-
-      }
-    });
-  });
-  var config = {
-    childList: true,
-    characterData: true,
-    subtree: true
-  };
-
-  // pass in the target node, as well as the observer options
-  observer.observe(document.querySelector('#files'), config);
-
 }
 
 
@@ -272,18 +263,37 @@ function initialize() {
   // and whenever we push/pop new pages.
   window.addEventListener("message", function(event) {
     if (event.data === 'extension:pageUpdated') {
-      initialize();
+      load();
     }
   });
 
   window.addEventListener("popstate", load);
-  initialize();
+  load();
 
   // End of code from https://github.com/thieman/github-selfies/blob/master/chrome/selfie.js
 
   function load() {
     chrome.runtime.sendMessage({action: 'load'}, function(response) {
       initialize();
+
+      var observer = new MutationObserver(function (mutations) {
+
+        mutations.forEach(function (mutation) {
+          var fileActionDiv = mutation.target.querySelector(".file-actions");
+          if (fileActionDiv != null) {
+            initialize();
+
+          }
+        });
+      });
+      var config = {
+        childList: true,
+        characterData: true,
+        subtree: true
+      };
+
+      // pass in the target node, as well as the observer options
+      observer.observe(document.querySelector('#files'), config);
     });
   }
 
