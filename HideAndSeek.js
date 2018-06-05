@@ -33,6 +33,33 @@ function hasBeenUpdate(fileMap, fileHeader) {
   return fileMap[filePath.value] == sha;
 }
 
+function addExpandAllComments() {
+  var sideBar = document.querySelector('#partial-discussion-sidebar');
+  if(sideBar != null && sideBar.querySelector('.HideAndSeekSpan.Comment-Expander') == null) {
+    var commentButtonDiv = document.createElement('div');
+    var expandAllButton = document.createElement('button');
+    commentButtonDiv.className = 'discussion-sidebar-item HideAndSeekSpan';
+
+    expandAllButton.innerText = "Expand All";
+    expandAllButton.onclick = function() {
+      document.querySelectorAll('.js-comment-container.outdated-comment:not(.open)').forEach(function(comementDiv){
+        comementDiv.querySelector('.show-outdated-button').click();
+      });
+    };
+    var hideAllButton = document.createElement('button');
+    hideAllButton.innerText = "Hide All";
+    hideAllButton.onclick = function() {
+      document.querySelectorAll('.js-comment-container.outdated-comment.open').forEach(function(comementDiv){
+        comementDiv.querySelector('.show-outdated-button').click();
+
+      });
+    };
+    commentButtonDiv.appendChild(expandAllButton);
+    commentButtonDiv.appendChild(hideAllButton);
+    sideBar.appendChild(commentButtonDiv);
+  }
+}
+
 
 //------------------Utils
 
@@ -257,7 +284,7 @@ function filterCompletedFiles(fileMap, headers) {
 // The function called on set up the plugin
 function initialize() {
   reportingBar();
-
+  addExpandAllComments()
   if (document.querySelector('#files') != null) {
     var filesCompleted = loadData()[getPullRequestId()]["files"];
     var fileHeaders = document.querySelectorAll('.file-header')
