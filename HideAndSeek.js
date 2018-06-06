@@ -157,7 +157,7 @@ function addComppleteActionToHeader(header, files) {
   var filePath = header.attributes["data-path"].value
   var sha = getSha(header);
   var checked = files[filePath] != undefined && hasBeenUpdate(files, header)
-  action.appendChild(createCheckBox(filePath, sha, checked, !hasBeenUpdate(files, header)));
+  action.appendChild(createCheckBox(filePath, sha, checked, files[filePath] != undefined && !hasBeenUpdate(files, header)));
 }
 
 
@@ -186,7 +186,10 @@ function createCheckBox(filePath, sha, checked, updated) {
   if (updated) {
     var emoji = document.createElement('span');
     emoji.classList.add("g-emoji")
+    emoji.classList.add("tooltipped")
+    emoji.classList.add("tooltipped-nw")
     emoji.setAttribute("alias", "thinking")
+    emoji.setAttribute("aria-label", "The has been updated since you last viewed it")
     emoji.setAttribute("fallback-src", "https://assets-cdn.github.com/images/icons/emoji/unicode/1f914.png")
     // emoji.innerText = '&#x1F914;';
     emoji.innerHTML = "&#x1f914;";
