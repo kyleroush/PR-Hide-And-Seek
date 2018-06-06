@@ -7,7 +7,7 @@ function publishReview() {
       var author = document.querySelector('.author').innerText;
       var files = loadData()[getPullRequestId()]['files'];
       //check button and then check if they want to completes
-      var meta = { author: files };
+      var meta = { author: author, files: files };
       var rawMeta = metaData(localStorageKey, meta)
       document.querySelector('#pull_request_review_body').value = document.querySelector('#pull_request_review_body').value + "\n" + rawMeta;
     }
@@ -21,7 +21,7 @@ function metaData(key, json) {
 function getMetaData(key, meta) {
   var regex = /<!-- seeker = (.*) -->/;
   var data = meta.match(regex)[1];
-  return JSON.stringify(data);
+  return JSON.parse(data);
 }
 
 function reportEveryone() {
@@ -30,10 +30,53 @@ function reportEveryone() {
     //this is the entire side bar div
     var reportdiv = document.createElement('div');
     reportdiv.className = 'discussion-sidebar-item HideAndSeekSpan report-everyone';
-
+    sideBar.appendChild(reportdiv);
     // this is the header
     var headerdiv = document.createElement('div');
-    header.innerText = "Everyones Completion percentage"
+    headerdiv.innerText = "Everyones Completion percentage"
+    headerdiv.className = 'discussion-sidebar-heading text-bold';
+    reportdiv.appendChild(headerdiv);
+    var allMeta = new Map();
+    document.querySelectorAll('.comment-form-textarea').forEach(function(comment) {
+      var regex = /<!-- seeker = (.*) -->/;
+      if (comment.value.match(regex) != null) {
+        var newMeta = getMetaData("key", comment.value)
+
+        allMeta.set(newMeta.author, newMeta.files)
+        allMeta[newMeta.author] = newMeta.files
+      }
+    });
+    var everyonesReportDiv = document.createElement('div');
+
+    var totalCount = document.querySelector('#files_tab_counter').innerText;
+
+
+    allMeta.forEach(function(files, name) {
+      var oneReportDiv = document.createElement('div');
+      var personNamediv = document.createElement('div');
+      personNamediv.innerText = name
+      oneReportDiv.appendChild(personNamediv)
+      var personReportdiv = document.createElement('div');
+      var completedCount = Object.keys(files).length;
+
+      var entireBar = document.createElement('div');
+      entireBar.style.width = "100%"
+      entireBar.style.backgroundColor = "#ddd"
+      entireBar.style.height = "15px"
+      var completeBar = document.createElement('div');
+      completeBar.style.height = "15px"
+      completeBar.style.backgroundColor = "#4CAF50"
+      oneReportDiv.appendChild(personReportdiv)
+      entireBar.appendChild(completeBar);
+      var width = completedCount/totalCount;
+
+      completeBar.style.width = width*100 + "%";
+      personReportdiv.appendChild(entireBar);
+      everyonesReportDiv.appendChild(oneReportDiv)
+    });
+    reportdiv.appendChild(everyonesReportDiv);
+
+
   }
 }
 
@@ -336,6 +379,7 @@ function initialize() {
   publishReview();
   reportingBar();
   addExpandAllComments()
+  reportEveryone()
   if (document.querySelector('#files') != null) {
     var filesCompleted = loadData()[getPullRequestId()]["files"];
     var fileHeaders = document.querySelectorAll('.file-header')
