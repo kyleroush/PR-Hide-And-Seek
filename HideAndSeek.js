@@ -1,3 +1,42 @@
+function publishReview() {
+  var reviewMenu = document.querySelector('.pull-request-review-menu')
+  if(reviewMenu != null) {
+    var button = reviewMenu.querySelector('button');
+
+    button.onclick = function() {
+      var author = document.querySelector('.author').innerText;
+      var files = loadData()[getPullRequestId()]['files'];
+      //check button and then check if they want to completes
+      var meta = { author: files };
+      var rawMeta = metaData(localStorageKey, meta)
+      document.querySelector('#pull_request_review_body').value = document.querySelector('#pull_request_review_body').value + "\n" + rawMeta;
+    }
+  }
+}
+
+function metaData(key, json) {
+  return "<!-- " + key + " = " + JSON.stringify(json) + " -->";
+}
+
+function getMetaData(key, meta) {
+  var regex = /<!-- seeker = (.*) -->/;
+  var data = meta.match(regex)[1];
+  return JSON.stringify(data);
+}
+
+function reportEveryone() {
+  var sideBar = document.querySelector('#partial-discussion-sidebar');
+  if(sideBar != null && sideBar.querySelector('.HideAndSeekSpan.report-everyone') == null) {
+    //this is the entire side bar div
+    var reportdiv = document.createElement('div');
+    reportdiv.className = 'discussion-sidebar-item HideAndSeekSpan report-everyone';
+
+    // this is the header
+    var headerdiv = document.createElement('div');
+    header.innerText = "Everyones Completion percentage"
+  }
+}
+
 function reportingBar() {
   var sideBar = document.querySelector('#partial-discussion-sidebar');
   if(sideBar != null && sideBar.querySelector('.HideAndSeekSpan') == null) {
@@ -294,6 +333,7 @@ function filterCompletedFiles(fileMap, headers) {
 //----------------------- Start up
 // The function called on set up the plugin
 function initialize() {
+  publishReview();
   reportingBar();
   addExpandAllComments()
   if (document.querySelector('#files') != null) {
