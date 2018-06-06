@@ -157,14 +157,14 @@ function addComppleteActionToHeader(header, files) {
   var filePath = header.attributes["data-path"].value
   var sha = getSha(header);
   var checked = files[filePath] != undefined && hasBeenUpdate(files, header)
-  action.appendChild(createCheckBox(filePath, sha, checked));
+  action.appendChild(createCheckBox(filePath, sha, checked, files[filePath] != undefined && !hasBeenUpdate(files, header)));
 }
 
 
 /**
  * Create an instance of the checkbox to complete a file.
  */
-function createCheckBox(filePath, sha, checked) {
+function createCheckBox(filePath, sha, checked, updated) {
   var span = document.createElement('span');
   span.classList.add('HideAndSeekSpan')
   var label = document.createElement('label');
@@ -183,6 +183,15 @@ function createCheckBox(filePath, sha, checked) {
   checkBox.type = "checkBox";
   checkBox.checked = checked;
   label.innerText = "Completed";
+  if (updated) {
+    var emoji = document.createElement('span');
+    emoji.classList.add("tooltipped")
+    emoji.classList.add("tooltipped-nw")
+    emoji.setAttribute("alias", "thinking")
+    emoji.setAttribute("aria-label", "The has been updated since you last viewed it")
+    emoji.innerHTML = "&#x1f914;";
+    label.appendChild(emoji);
+  }
   span.appendChild(label);
   label.appendChild(checkBox);
   return span;
