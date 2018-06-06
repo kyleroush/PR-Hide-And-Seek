@@ -185,13 +185,10 @@ function createCheckBox(filePath, sha, checked, updated) {
   label.innerText = "Completed";
   if (updated) {
     var emoji = document.createElement('span');
-    emoji.classList.add("g-emoji")
     emoji.classList.add("tooltipped")
     emoji.classList.add("tooltipped-nw")
     emoji.setAttribute("alias", "thinking")
     emoji.setAttribute("aria-label", "The has been updated since you last viewed it")
-    emoji.setAttribute("fallback-src", "https://assets-cdn.github.com/images/icons/emoji/unicode/1f914.png")
-    // emoji.innerText = '&#x1F914;';
     emoji.innerHTML = "&#x1f914;";
     label.appendChild(emoji);
   }
