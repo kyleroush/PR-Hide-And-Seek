@@ -115,7 +115,6 @@ function reportingBar() {
     entireBar.style.height = "15px"
     entireBar.classList.add("tooltipped")
     entireBar.classList.add("tooltipped-nw")
-    entireBar.setAttribute("aria-label", "What you have completed locally")
 
     var completeBar = document.createElement('span');
     completeBar.style.height = "15px"
@@ -137,7 +136,7 @@ function reportingBar() {
     completeBar.style.width = width * 100 + "%";
     completeBar.classList.add("tooltipped")
     completeBar.classList.add("tooltipped-nw")
-    completeBar.setAttribute("aria-label", "You have completed " + Math.floor(width * 100) + "%")
+    completeBar.setAttribute("aria-label", "You have completed " + Math.floor(width * 100) + "% locally")
     // completeBar.innerText = Math.floor(width * 100) + "%";
     // completeBar.innerText = "You Completeion " + Math.floor(width * 100) + "%";
   }
