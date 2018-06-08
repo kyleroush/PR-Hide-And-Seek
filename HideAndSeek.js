@@ -1,15 +1,36 @@
+function createToPublish() {
+  var span = document.createElement('span');
+  span.classList.add('HideAndSeekSpan')
+  span.classList.add('to-publish')
+  var label = document.createElement('label');
+  var checkBox = document.createElement('input');
+  checkBox.type = "checkBox";
+  checkBox.checked = true;
+  label.innerText = "Publish Review";
+  span.appendChild(label);
+  label.appendChild(checkBox);
+  return span;
+}
+
 function publishReview() {
   var reviewMenu = document.querySelector('.pull-request-review-menu')
   if(reviewMenu != null) {
     var button = reviewMenu.querySelector('button');
+    var parent = button.parentElement
 
-    button.onclick = function() {
-      var author = document.querySelector('.header-nav-current-user').querySelector('strong').innerText
-      var files = loadData()[getPullRequestId()]['files'];
-      //check button and then check if they want to completes
-      var meta = { author: author, files: files };
-      var rawMeta = metaData(localStorageKey, meta)
-      document.querySelector('#pull_request_review_body').value = document.querySelector('#pull_request_review_body').value + "\n" + rawMeta;
+    if(parent.querySelector(".HideAndSeekSpan.to-publish") == null) {
+      parent.prepend(createToPublish())
+      button.onclick = function() {
+        var toPublish = document.querySelector(".HideAndSeekSpan.to-publish")
+        if(toPublish != null && toPublish.querySelector('input').checked) {
+          var author = document.querySelector('.header-nav-current-user').querySelector('strong').innerText
+          var files = loadData()[getPullRequestId()]['files'];
+          //check button and then check if they want to completes
+          var meta = { author: author, files: files };
+          var rawMeta = metaData(localStorageKey, meta)
+          document.querySelector('#pull_request_review_body').value = document.querySelector('#pull_request_review_body').value + "\n" + rawMeta;
+        }
+      }
     }
   }
 }
@@ -81,31 +102,44 @@ function reportEveryone() {
 }
 
 function reportingBar() {
-  var sideBar = document.querySelector('#partial-discussion-sidebar');
-  if(sideBar != null && sideBar.querySelector('.HideAndSeekSpan') == null) {
-    var reportdiv = document.createElement('div');
-    reportdiv.className = 'discussion-sidebar-item HideAndSeekSpan';
-    var entireBar = document.createElement('div');
-    entireBar.style.width = "100%"
+  var tabnav = document.querySelector('.tabnav-extra');
+  if(tabnav != null && tabnav.querySelector('.HideAndSeekSpan.your-report') == null && tabnav.querySelector('.diffstat') != null) {
+    var reportSpan = document.createElement('span');
+    reportSpan.className = 'HideAndSeekSpan your-report';
+    // reportSpan.display = "block";
+
+    var entireBar = document.createElement('span');
+    entireBar.style.display = "inline-block";
+    entireBar.style.width = "100px"
     entireBar.style.backgroundColor = "#ddd"
     entireBar.style.height = "15px"
-    var completeBar = document.createElement('div');
+    entireBar.classList.add("tooltipped")
+    entireBar.classList.add("tooltipped-nw")
+    entireBar.setAttribute("aria-label", "What you have completed locally")
+
+    var completeBar = document.createElement('span');
     completeBar.style.height = "15px"
     completeBar.style.backgroundColor = "#4CAF50"
-    var divHeader = document.createElement('div');
-    divHeader.className = 'discussion-sidebar-heading text-bold';
-    divHeader.innerText = "Completeion %";
-    reportdiv.appendChild(divHeader);
-    reportdiv.appendChild(entireBar);
+    completeBar.style.display = "inline-block";
+
+    // var headerSpan = document.createElement('span');
+    // headerSpan.className = 'discussion-sidebar-heading text-bold';
+    reportSpan.appendChild(entireBar);
+    // reportSpan.appendChild(headerSpan);
     entireBar.appendChild(completeBar);
-    sideBar.appendChild(reportdiv)
+    tabnav.prepend(reportSpan)
 
     var files = loadData()[getPullRequestId()]["files"];
     // var fileHeaders = document.querySelectorAll('.file-header');
     var completedCount = Object.keys(files).length;
     var totalCount = document.querySelector('#files_tab_counter').innerText;
     var width = completedCount/totalCount;
-    completeBar.style.width = width*100 + "%";
+    completeBar.style.width = width * 100 + "%";
+    completeBar.classList.add("tooltipped")
+    completeBar.classList.add("tooltipped-nw")
+    completeBar.setAttribute("aria-label", "You have completed " + Math.floor(width * 100) + "%")
+    // completeBar.innerText = Math.floor(width * 100) + "%";
+    // completeBar.innerText = "You Completeion " + Math.floor(width * 100) + "%";
   }
 }
 
