@@ -8,7 +8,7 @@ function publishReview() {
       var files = loadData()[getPullRequestId()]['files'];
       //check button and then check if they want to completes
       var meta = { author: files };
-      var rawMeta = metaData(localStorageKey, meta)
+      var rawMeta = metaData(localStorageKey, meta);
       document.querySelector('#pull_request_review_body').value = document.querySelector('#pull_request_review_body').value + "\n" + rawMeta;
     }
   }
