@@ -20,9 +20,10 @@ function whenReviewLoads(data) {
 function whenFilesLoad(files) {
   var allFiles = new Map();
   JSON.parse(files).forEach(function(file) {
-
-    allFiles.set(file.filename, file.sha)
-    allFiles[file.filename] = file.sha
+    var shaArray = file.raw_url.split('/')
+    var sha = shaArray[shaArray.length-2]
+    allFiles.set(file.filename, sha)
+    allFiles[file.filename] = sha
 
   });
 
@@ -43,27 +44,46 @@ function renderGraphs() {
 
     var totalCount = document.querySelector('#files_tab_counter').innerText;
     Object.keys(reviews).forEach(function(name) {
-      var files = reviews[name];
+      var reviewerFiles = reviews[name];
 
       var oneReportDiv = document.createElement('div');
       var personNamediv = document.createElement('div');
       personNamediv.innerText = name
       oneReportDiv.appendChild(personNamediv)
       var personReportdiv = document.createElement('div');
-      var completedCount = Object.keys(files).length;
+      var completedCount = Object.keys(reviewerFiles).length;
+      var outdatedCount = 0;
 
       var entireBar = document.createElement('div');
       entireBar.style.width = "100%"
       entireBar.style.backgroundColor = "#ddd"
       entireBar.style.height = "15px"
-      var completeBar = document.createElement('div');
+      var completeBar = document.createElement('span');
       completeBar.style.height = "15px"
       completeBar.style.backgroundColor = "#4CAF50"
+      var outdatedBar = document.createElement('span');
+      outdatedBar.style.height = "15px"
+      outdatedBar.style.backgroundColor = "#FF4500"
       oneReportDiv.appendChild(personReportdiv)
       entireBar.appendChild(completeBar);
-      var width = completedCount/totalCount;
+      entireBar.appendChild(outdatedBar);
 
-      completeBar.style.width = width*100 + "%";
+      Object.keys(reviewerFiles).forEach(function(file) {
+        var sha = files[file];
+        var reviewSha = reviewerFiles[file];
+        if (sha != reviewSha) {
+          completedCount--;
+          outdatedCount++;
+        }
+      });
+
+      var completeWidth = completedCount/totalCount;
+      var outdatedWidth = outdatedCount/totalCount;
+      completeBar.style.display = "inline-block";
+      outdatedBar.style.display = "inline-block";
+
+      completeBar.style.width = completeWidth * 100 + "%";
+      outdatedBar.style.width = outdatedWidth * 100 + "%";
       personReportdiv.appendChild(entireBar);
       everyonesReportDiv.appendChild(oneReportDiv)
     });
@@ -135,7 +155,7 @@ function reportEveryone() {
     headerdiv.className = 'discussion-sidebar-heading text-bold';
     reportdiv.appendChild(headerdiv);
     var allMeta = new Map();
-    if (document.querySelector('.js-comment-edit-button') != null && false) {
+    if (document.querySelector('.js-comment-edit-button') != null) {
 
       document.querySelectorAll('.comment-form-textarea').forEach(function(comment) {
         var regex = /<!-- seeker = (.*) -->/;
@@ -169,9 +189,9 @@ function reportEveryone() {
         completeBar.style.backgroundColor = "#4CAF50"
         oneReportDiv.appendChild(personReportdiv)
         entireBar.appendChild(completeBar);
-        var width = completedCount/totalCount;
+        var completeWidth = completedCount/totalCount;
 
-        completeBar.style.width = width*100 + "%";
+        completeBar.style.width = completeWidth * 100 + "%";
         personReportdiv.appendChild(entireBar);
         everyonesReportDiv.appendChild(oneReportDiv)
       });
