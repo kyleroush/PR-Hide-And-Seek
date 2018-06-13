@@ -1,3 +1,106 @@
+function whenReviewLoads(data) {
+  var allMeta = new Map();
+  JSON.parse(data).forEach(function(review) {
+    var regex = /<!-- seeker = (.*) -->/;
+    if (review.body.match(regex) != null) {
+      var newMeta = getMetaData("key", review.body)
+
+      allMeta.set(newMeta.author, newMeta.files)
+      allMeta[newMeta.author] = newMeta.files
+    }
+  });
+
+  var reportEveryOne = document.querySelector('.HideAndSeekSpan.report-everyone');
+  if (reportEveryOne != null) {
+    reportEveryOne.dataset.reviews = JSON.stringify(allMeta)
+  }
+  renderGraphs()
+}
+
+function whenFilesLoad(files) {
+  var allFiles = new Map();
+  JSON.parse(files).forEach(function(file) {
+    var shaArray = file.raw_url.split('/')
+    var sha = shaArray[shaArray.length-2]
+    allFiles.set(file.filename, sha)
+    allFiles[file.filename] = sha
+
+  });
+
+  var reportEveryOne = document.querySelector('.HideAndSeekSpan.report-everyone');
+  if (reportEveryOne != null) {
+    reportEveryOne.dataset.files = JSON.stringify(allFiles)
+  }
+  renderGraphs()
+}
+
+function renderGraphs() {
+  var reportEveryOne = document.querySelector('.HideAndSeekSpan.report-everyone');
+
+  if (reportEveryOne != null && reportEveryOne.dataset.files != null && reportEveryOne.dataset.reviews != null) {
+    var files = JSON.parse(reportEveryOne.dataset.files);
+    var reviews = JSON.parse(reportEveryOne.dataset.reviews);
+    var everyonesReportDiv = document.createElement('div');
+
+    var totalCount = document.querySelector('#files_tab_counter').innerText;
+    Object.keys(reviews).forEach(function(name) {
+      var reviewerFiles = reviews[name];
+
+      var oneReportDiv = document.createElement('div');
+      var personNamediv = document.createElement('div');
+      personNamediv.innerText = name
+      oneReportDiv.appendChild(personNamediv)
+      var personReportdiv = document.createElement('div');
+      var completedCount = Object.keys(reviewerFiles).length;
+      var outdatedCount = 0;
+
+      var entireBar = document.createElement('div');
+      entireBar.style.width = "100%"
+      entireBar.style.backgroundColor = "#ddd"
+      entireBar.style.height = "15px"
+      var completeBar = document.createElement('span');
+      completeBar.style.height = "15px"
+      completeBar.style.backgroundColor = "#4CAF50"
+      var outdatedBar = document.createElement('span');
+      outdatedBar.style.height = "15px"
+      outdatedBar.style.backgroundColor = "#FF4500"
+      oneReportDiv.appendChild(personReportdiv)
+      entireBar.appendChild(completeBar);
+      entireBar.appendChild(outdatedBar);
+
+      completeBar.classList.add("tooltipped")
+      completeBar.classList.add("tooltipped-nw")
+
+      outdatedBar.classList.add("tooltipped")
+      outdatedBar.classList.add("tooltipped-nw")
+
+      Object.keys(reviewerFiles).forEach(function(file) {
+        var sha = files[file];
+        var reviewSha = reviewerFiles[file];
+        if (sha != reviewSha) {
+          completedCount--;
+          outdatedCount++;
+        }
+      });
+
+      var completeWidth = completedCount/totalCount;
+      var outdatedWidth = outdatedCount/totalCount;
+      completeBar.style.display = "inline-block";
+      outdatedBar.style.display = "inline-block";
+
+      completeBar.style.width = completeWidth * 100 + "%";
+      outdatedBar.style.width = outdatedWidth * 100 + "%";
+      completeBar.setAttribute("aria-label", name + " completed " + Math.floor(completeWidth * 100) + "%")
+      outdatedBar.setAttribute("aria-label", name + " has completed " + Math.floor(outdatedWidth * 100) + "% but file has been updated")
+
+      personReportdiv.appendChild(entireBar);
+      everyonesReportDiv.appendChild(oneReportDiv)
+    });
+    reportEveryOne.appendChild(everyonesReportDiv);
+
+  }
+}
+
 function createToPublish() {
   var span = document.createElement('span');
   span.classList.add('HideAndSeekSpan')
@@ -28,7 +131,7 @@ function publishReview() {
           //check button and then check if they want to completes
           var meta = { author: author, files: files };
           var rawMeta = metaData(localStorageKey, meta)
-          document.querySelector('#pull_request_review_body').value = document.querySelector('#pull_request_review_body').value + "\n" + rawMeta;
+          document.querySelector('#pull_request_review_body').value = document.querySelector('#pull_request_review_body').value + "\n\n\n\n\n\n\n" + rawMeta;
         }
       }
     }
@@ -58,46 +161,29 @@ function reportEveryone() {
     headerdiv.className = 'discussion-sidebar-heading text-bold';
     reportdiv.appendChild(headerdiv);
     var allMeta = new Map();
-    document.querySelectorAll('.comment-form-textarea').forEach(function(comment) {
-      var regex = /<!-- seeker = (.*) -->/;
-      if (comment.value.match(regex) != null) {
-        var newMeta = getMetaData("key", comment.value)
+    if (document.querySelector('.js-comment-edit-button') != null) {
 
-        allMeta.set(newMeta.author, newMeta.files)
-        allMeta[newMeta.author] = newMeta.files
+      document.querySelectorAll('.comment-form-textarea').forEach(function(comment) {
+        var regex = /<!-- seeker = (.*) -->/;
+        if (comment.value.match(regex) != null) {
+          var newMeta = getMetaData("key", comment.value)
+
+          allMeta.set(newMeta.author, newMeta.files)
+          allMeta[newMeta.author] = newMeta.files
+        }
+      });
+
+      var reportEveryOne = document.querySelector('.HideAndSeekSpan.report-everyone');
+      if (reportEveryOne != null) {
+        reportdiv.dataset.reviews = JSON.stringify(allMeta)
       }
-    });
-    var everyonesReportDiv = document.createElement('div');
 
-    var totalCount = document.querySelector('#files_tab_counter').innerText;
+      getPrsFiles(getPRhost(), getPRorg(), getPRrepo(), getPRnumber(), whenFilesLoad)
 
-
-    allMeta.forEach(function(files, name) {
-      var oneReportDiv = document.createElement('div');
-      var personNamediv = document.createElement('div');
-      personNamediv.innerText = name
-      oneReportDiv.appendChild(personNamediv)
-      var personReportdiv = document.createElement('div');
-      var completedCount = Object.keys(files).length;
-
-      var entireBar = document.createElement('div');
-      entireBar.style.width = "100%"
-      entireBar.style.backgroundColor = "#ddd"
-      entireBar.style.height = "15px"
-      var completeBar = document.createElement('div');
-      completeBar.style.height = "15px"
-      completeBar.style.backgroundColor = "#4CAF50"
-      oneReportDiv.appendChild(personReportdiv)
-      entireBar.appendChild(completeBar);
-      var width = completedCount/totalCount;
-
-      completeBar.style.width = width*100 + "%";
-      personReportdiv.appendChild(entireBar);
-      everyonesReportDiv.appendChild(oneReportDiv)
-    });
-    reportdiv.appendChild(everyonesReportDiv);
-
-
+    } else {
+      console.log("start ajax");
+      getPrsConvo(getPRhost(), getPRorg(), getPRrepo(), getPRnumber(), whenReviewLoads)
+    }
   }
 }
 
