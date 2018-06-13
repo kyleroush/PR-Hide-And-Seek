@@ -68,6 +68,12 @@ function renderGraphs() {
       entireBar.appendChild(completeBar);
       entireBar.appendChild(outdatedBar);
 
+      completeBar.classList.add("tooltipped")
+      completeBar.classList.add("tooltipped-nw")
+
+      outdatedBar.classList.add("tooltipped")
+      outdatedBar.classList.add("tooltipped-nw")
+
       Object.keys(reviewerFiles).forEach(function(file) {
         var sha = files[file];
         var reviewSha = reviewerFiles[file];
@@ -84,6 +90,9 @@ function renderGraphs() {
 
       completeBar.style.width = completeWidth * 100 + "%";
       outdatedBar.style.width = outdatedWidth * 100 + "%";
+      completeBar.setAttribute("aria-label", name + " completed " + Math.floor(completeWidth * 100) + "%")
+      outdatedBar.setAttribute("aria-label", name + " has completed " + Math.floor(outdatedWidth * 100) + "% but file has been updated")
+
       personReportdiv.appendChild(entireBar);
       everyonesReportDiv.appendChild(oneReportDiv)
     });
@@ -91,9 +100,6 @@ function renderGraphs() {
 
   }
 }
-
-
-
 
 function createToPublish() {
   var span = document.createElement('span');
@@ -167,39 +173,16 @@ function reportEveryone() {
         }
       });
 
-      var everyonesReportDiv = document.createElement('div');
+      var reportEveryOne = document.querySelector('.HideAndSeekSpan.report-everyone');
+      if (reportEveryOne != null) {
+        reportdiv.dataset.reviews = JSON.stringify(allMeta)
+      }
 
-      var totalCount = document.querySelector('#files_tab_counter').innerText;
+      getPrsFiles(getPRhost(), getPRorg(), getPRrepo(), getPRnumber(), whenFilesLoad)
 
-
-      allMeta.forEach(function(files, name) {
-        var oneReportDiv = document.createElement('div');
-        var personNamediv = document.createElement('div');
-        personNamediv.innerText = name
-        oneReportDiv.appendChild(personNamediv)
-        var personReportdiv = document.createElement('div');
-        var completedCount = Object.keys(files).length;
-
-        var entireBar = document.createElement('div');
-        entireBar.style.width = "100%"
-        entireBar.style.backgroundColor = "#ddd"
-        entireBar.style.height = "15px"
-        var completeBar = document.createElement('div');
-        completeBar.style.height = "15px"
-        completeBar.style.backgroundColor = "#4CAF50"
-        oneReportDiv.appendChild(personReportdiv)
-        entireBar.appendChild(completeBar);
-        var completeWidth = completedCount/totalCount;
-
-        completeBar.style.width = completeWidth * 100 + "%";
-        personReportdiv.appendChild(entireBar);
-        everyonesReportDiv.appendChild(oneReportDiv)
-      });
-      reportdiv.appendChild(everyonesReportDiv);
     } else {
       console.log("start ajax");
       getPrsConvo(getPRhost(), getPRorg(), getPRrepo(), getPRnumber(), whenReviewLoads)
-      getPrsFiles(getPRhost(), getPRorg(), getPRrepo(), getPRnumber(), whenFilesLoad)
     }
   }
 }
