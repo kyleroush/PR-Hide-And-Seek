@@ -1,3 +1,80 @@
+function whenReviewLoads(data) {
+  var allMeta = new Map();
+  JSON.parse(data).forEach(function(review) {
+    var regex = /<!-- seeker = (.*) -->/;
+    if (review.body.match(regex) != null) {
+      var newMeta = getMetaData("key", review.body)
+
+      allMeta.set(newMeta.author, newMeta.files)
+      allMeta[newMeta.author] = newMeta.files
+    }
+  });
+
+  var reportEveryOne = document.querySelector('.HideAndSeekSpan.report-everyone');
+  if (reportEveryOne != null) {
+    reportEveryOne.dataset.reviews = JSON.stringify(allMeta)
+  }
+  renderGraphs()
+}
+
+function whenFilesLoad(files) {
+  var allFiles = new Map();
+  JSON.parse(files).forEach(function(file) {
+
+    allFiles.set(file.filename, file.sha)
+    allFiles[file.filename] = file.sha
+
+  });
+
+  var reportEveryOne = document.querySelector('.HideAndSeekSpan.report-everyone');
+  if (reportEveryOne != null) {
+    reportEveryOne.dataset.files = JSON.stringify(allFiles)
+  }
+  renderGraphs()
+}
+
+function renderGraphs() {
+  var reportEveryOne = document.querySelector('.HideAndSeekSpan.report-everyone');
+
+  if (reportEveryOne != null && reportEveryOne.dataset.files != null && reportEveryOne.dataset.reviews != null) {
+    var files = JSON.parse(reportEveryOne.dataset.files);
+    var reviews = JSON.parse(reportEveryOne.dataset.reviews);
+    var everyonesReportDiv = document.createElement('div');
+
+    var totalCount = document.querySelector('#files_tab_counter').innerText;
+    Object.keys(reviews).forEach(function(name) {
+      var files = reviews[name];
+
+      var oneReportDiv = document.createElement('div');
+      var personNamediv = document.createElement('div');
+      personNamediv.innerText = name
+      oneReportDiv.appendChild(personNamediv)
+      var personReportdiv = document.createElement('div');
+      var completedCount = Object.keys(files).length;
+
+      var entireBar = document.createElement('div');
+      entireBar.style.width = "100%"
+      entireBar.style.backgroundColor = "#ddd"
+      entireBar.style.height = "15px"
+      var completeBar = document.createElement('div');
+      completeBar.style.height = "15px"
+      completeBar.style.backgroundColor = "#4CAF50"
+      oneReportDiv.appendChild(personReportdiv)
+      entireBar.appendChild(completeBar);
+      var width = completedCount/totalCount;
+
+      completeBar.style.width = width*100 + "%";
+      personReportdiv.appendChild(entireBar);
+      everyonesReportDiv.appendChild(oneReportDiv)
+    });
+    reportEveryOne.appendChild(everyonesReportDiv);
+
+  }
+}
+
+
+
+
 function createToPublish() {
   var span = document.createElement('span');
   span.classList.add('HideAndSeekSpan')
@@ -28,7 +105,7 @@ function publishReview() {
           //check button and then check if they want to completes
           var meta = { author: author, files: files };
           var rawMeta = metaData(localStorageKey, meta)
-          document.querySelector('#pull_request_review_body').value = document.querySelector('#pull_request_review_body').value + "\n" + rawMeta;
+          document.querySelector('#pull_request_review_body').value = document.querySelector('#pull_request_review_body').value + "\n\n\n\n\n\n\n" + rawMeta;
         }
       }
     }
@@ -58,46 +135,52 @@ function reportEveryone() {
     headerdiv.className = 'discussion-sidebar-heading text-bold';
     reportdiv.appendChild(headerdiv);
     var allMeta = new Map();
-    document.querySelectorAll('.comment-form-textarea').forEach(function(comment) {
-      var regex = /<!-- seeker = (.*) -->/;
-      if (comment.value.match(regex) != null) {
-        var newMeta = getMetaData("key", comment.value)
+    if (document.querySelector('.js-comment-edit-button') != null && false) {
 
-        allMeta.set(newMeta.author, newMeta.files)
-        allMeta[newMeta.author] = newMeta.files
-      }
-    });
-    var everyonesReportDiv = document.createElement('div');
+      document.querySelectorAll('.comment-form-textarea').forEach(function(comment) {
+        var regex = /<!-- seeker = (.*) -->/;
+        if (comment.value.match(regex) != null) {
+          var newMeta = getMetaData("key", comment.value)
 
-    var totalCount = document.querySelector('#files_tab_counter').innerText;
+          allMeta.set(newMeta.author, newMeta.files)
+          allMeta[newMeta.author] = newMeta.files
+        }
+      });
 
+      var everyonesReportDiv = document.createElement('div');
 
-    allMeta.forEach(function(files, name) {
-      var oneReportDiv = document.createElement('div');
-      var personNamediv = document.createElement('div');
-      personNamediv.innerText = name
-      oneReportDiv.appendChild(personNamediv)
-      var personReportdiv = document.createElement('div');
-      var completedCount = Object.keys(files).length;
-
-      var entireBar = document.createElement('div');
-      entireBar.style.width = "100%"
-      entireBar.style.backgroundColor = "#ddd"
-      entireBar.style.height = "15px"
-      var completeBar = document.createElement('div');
-      completeBar.style.height = "15px"
-      completeBar.style.backgroundColor = "#4CAF50"
-      oneReportDiv.appendChild(personReportdiv)
-      entireBar.appendChild(completeBar);
-      var width = completedCount/totalCount;
-
-      completeBar.style.width = width*100 + "%";
-      personReportdiv.appendChild(entireBar);
-      everyonesReportDiv.appendChild(oneReportDiv)
-    });
-    reportdiv.appendChild(everyonesReportDiv);
+      var totalCount = document.querySelector('#files_tab_counter').innerText;
 
 
+      allMeta.forEach(function(files, name) {
+        var oneReportDiv = document.createElement('div');
+        var personNamediv = document.createElement('div');
+        personNamediv.innerText = name
+        oneReportDiv.appendChild(personNamediv)
+        var personReportdiv = document.createElement('div');
+        var completedCount = Object.keys(files).length;
+
+        var entireBar = document.createElement('div');
+        entireBar.style.width = "100%"
+        entireBar.style.backgroundColor = "#ddd"
+        entireBar.style.height = "15px"
+        var completeBar = document.createElement('div');
+        completeBar.style.height = "15px"
+        completeBar.style.backgroundColor = "#4CAF50"
+        oneReportDiv.appendChild(personReportdiv)
+        entireBar.appendChild(completeBar);
+        var width = completedCount/totalCount;
+
+        completeBar.style.width = width*100 + "%";
+        personReportdiv.appendChild(entireBar);
+        everyonesReportDiv.appendChild(oneReportDiv)
+      });
+      reportdiv.appendChild(everyonesReportDiv);
+    } else {
+      console.log("start ajax");
+      getPrsConvo(getPRhost(), getPRorg(), getPRrepo(), getPRnumber(), whenReviewLoads)
+      getPrsFiles(getPRhost(), getPRorg(), getPRrepo(), getPRnumber(), whenFilesLoad)
+    }
   }
 }
 
