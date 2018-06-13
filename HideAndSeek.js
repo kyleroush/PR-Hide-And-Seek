@@ -181,7 +181,7 @@ function reportEveryone() {
       getPrsFiles(getPRhost(), getPRorg(), getPRrepo(), getPRnumber(), whenFilesLoad)
 
     } else {
-      console.log("start ajax");
+      getPrsFiles(getPRhost(), getPRorg(), getPRrepo(), getPRnumber(), whenFilesLoad)
       getPrsConvo(getPRhost(), getPRorg(), getPRrepo(), getPRnumber(), whenReviewLoads)
     }
   }
