@@ -27,7 +27,7 @@ function getMetaData(key, meta) {
 function reportEveryone() {
   var sideBar = document.querySelector('#partial-discussion-sidebar');
   if(sideBar != null && sideBar.querySelector('.HideAndSeekSpan.report-everyone') == null) {
-    //this is the entire side bar div
+    //this is the entire side bar div 
     var reportdiv = document.createElement('div');
     reportdiv.className = 'discussion-sidebar-item HideAndSeekSpan report-everyone';
 
