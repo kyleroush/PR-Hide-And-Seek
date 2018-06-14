@@ -12,7 +12,7 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["GithubRestApi.js", "HideAndSeek.js"]
+      "js": ["scripts/PRUtils.js", "scripts/Comments.js", "scripts/DataStorage.js", "scripts/GithubRestApi.js", "scripts/HideAndSeek.js", "StartUp.js"]
     }
   ]
 }
