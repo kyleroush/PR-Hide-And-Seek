@@ -4,7 +4,7 @@ function publishReview() {
     var button = reviewMenu.querySelector('button');
 
     button.onclick = function() {
-      var author = document.querySelector('.header-nav-current-user').querySelector('strong').innerText
+      var author = document.querySelector('.header-nav-current-user').querySelector('strong').innerText;
       var files = loadData()[getPullRequestId()]['files'];
       //check button and then check if they want to completes
       var meta = { author: files };
