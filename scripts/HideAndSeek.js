@@ -3,18 +3,18 @@ function whenReviewLoads(data) {
   JSON.parse(data).forEach(function(review) {
     var regex = /<!-- seeker = (.*) -->/;
     if (review.body.match(regex) != null) {
-      var newMeta = getMetaData("key", review.body)
+      var newMeta = getMetaData("key", review.body);
 
-      allMeta.set(newMeta.author, newMeta.files)
-      allMeta[newMeta.author] = newMeta.files
+      allMeta.set(newMeta.author, newMeta.files);
+      allMeta[newMeta.author] = newMeta.files;
     }
   });
 
   var reportEveryOne = document.querySelector('.HideAndSeekSpan.report-everyone');
   if (reportEveryOne != null) {
-    reportEveryOne.dataset.reviews = JSON.stringify(allMeta)
+    reportEveryOne.dataset.reviews = JSON.stringify(allMeta);
   }
-  renderGraphs()
+  renderGraphs();
 }
 
 function whenFilesLoad(files) {
@@ -83,15 +83,15 @@ function renderGraphs() {
         }
       });
 
-      var completeWidth = completedCount/totalCount;
-      var outdatedWidth = outdatedCount/totalCount;
+      var completeWidth = Math.floor(completedCount / totalCount * 100);
+      var outdatedWidth = Math.floor(outdatedCount / totalCount * 100);
       completeBar.style.display = "inline-block";
       outdatedBar.style.display = "inline-block";
 
-      completeBar.style.width = completeWidth * 100 + "%";
-      outdatedBar.style.width = outdatedWidth * 100 + "%";
-      completeBar.setAttribute("aria-label", name + " completed " + Math.floor(completeWidth * 100) + "%")
-      outdatedBar.setAttribute("aria-label", name + " has completed " + Math.floor(outdatedWidth * 100) + "% but file has been updated")
+      completeBar.style.width = completeWidth + "%";
+      outdatedBar.style.width = outdatedWidth + "%";
+      completeBar.setAttribute("aria-label", name + " completed " + completeWidth + "%");
+      outdatedBar.setAttribute("aria-label", name + " has completed " + outdatedWidth + "% but file has been updated");
 
       personReportdiv.appendChild(entireBar);
       everyonesReportDiv.appendChild(oneReportDiv)
@@ -189,12 +189,12 @@ function reportingBar() {
     entireBar.style.width = "100px"
     entireBar.style.backgroundColor = "#ddd"
     entireBar.style.height = "15px"
-    entireBar.classList.add("tooltipped")
-    entireBar.classList.add("tooltipped-nw")
+    entireBar.classList.add("tooltipped");
+    entireBar.classList.add("tooltipped-nw");
 
     var completeBar = document.createElement('span');
-    completeBar.style.height = "15px"
-    completeBar.style.backgroundColor = "#4CAF50"
+    completeBar.style.height = "15px";
+    completeBar.style.backgroundColor = "#4CAF50";
     completeBar.style.display = "inline-block";
 
     // var headerSpan = document.createElement('span');
@@ -202,7 +202,7 @@ function reportingBar() {
     reportSpan.appendChild(entireBar);
     // reportSpan.appendChild(headerSpan);
     entireBar.appendChild(completeBar);
-    tabnav.prepend(reportSpan)
+    tabnav.prepend(reportSpan);
 
     var files = loadData()[getPullRequestId()]["files"];
     // var fileHeaders = document.querySelectorAll('.file-header');
@@ -210,16 +210,14 @@ function reportingBar() {
     var totalCount = document.querySelector('#files_tab_counter').innerText;
     var width = completedCount/totalCount;
     completeBar.style.width = width * 100 + "%";
-    completeBar.classList.add("tooltipped")
-    completeBar.classList.add("tooltipped-nw")
-    completeBar.setAttribute("aria-label", "You have completed " + Math.floor(width * 100) + "% locally")
-    // completeBar.innerText = Math.floor(width * 100) + "%";
-    // completeBar.innerText = "You Completeion " + Math.floor(width * 100) + "%";
+    completeBar.classList.add("tooltipped");
+    completeBar.classList.add("tooltipped-nw");
+    completeBar.setAttribute("aria-label", "You have completed " + Math.floor(width * 100) + "% locally");
   }
 }
 
 function hasBeenUpdate(fileMap, fileHeader) {
-  var sha = getSha(fileHeader)
+  var sha = getSha(fileHeader);
   var filePath = fileHeader.attributes["data-path"];
   return fileMap[filePath.value] == sha;
 }
@@ -240,7 +238,7 @@ function hasBeenUpdate(fileMap, fileHeader) {
  */
 function addCompleteAction(files, headers) {
   headers.forEach(function(header) {
-    addComppleteActionToHeader(header, files)
+    addComppleteActionToHeader(header, files);
   });
 }
 
@@ -252,7 +250,7 @@ function addComppleteActionToHeader(header, files) {
   }
   var filePath = header.attributes["data-path"].value
   var sha = getSha(header);
-  var checked = files[filePath] != undefined && hasBeenUpdate(files, header)
+  var checked = files[filePath] != undefined && hasBeenUpdate(files, header);
   action.appendChild(createCheckBox(filePath, sha, checked, files[filePath] != undefined && !hasBeenUpdate(files, header)));
 }
 
@@ -262,11 +260,11 @@ function addComppleteActionToHeader(header, files) {
  */
 function createCheckBox(filePath, sha, checked, updated) {
   var span = document.createElement('span');
-  span.classList.add('HideAndSeekSpan')
+  span.classList.add('HideAndSeekSpan');
   var label = document.createElement('label');
   var checkBox = document.createElement('input');
   checkBox.addEventListener( 'click', function() {
-    collapse(this.parentElement.parentElement.parentElement, this.checked)
+    collapse(this.parentElement.parentElement.parentElement, this.checked);
       if(this.checked) {
         completeFile(checkBox.dataset.filePath, checkBox.dataset.sha);
       } else {
@@ -281,10 +279,10 @@ function createCheckBox(filePath, sha, checked, updated) {
   label.innerText = "Completed";
   if (updated) {
     var emoji = document.createElement('span');
-    emoji.classList.add("tooltipped")
-    emoji.classList.add("tooltipped-nw")
-    emoji.setAttribute("alias", "thinking")
-    emoji.setAttribute("aria-label", "The has been updated since you last viewed it")
+    emoji.classList.add("tooltipped");
+    emoji.classList.add("tooltipped-nw");
+    emoji.setAttribute("alias", "thinking");
+    emoji.setAttribute("aria-label", "The has been updated since you last viewed it");
     emoji.innerHTML = "&#x1f914;";
     label.appendChild(emoji);
   }

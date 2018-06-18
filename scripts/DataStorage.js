@@ -2,6 +2,7 @@
  * The id for the storage
  */
 var localStorageKey = "seeker";
+var filesStorageKey = "files";
 
 /**
  * Retreive the data for the plugin
@@ -21,18 +22,20 @@ function loadData() {
   }
   if (data[getPullRequestId()] == undefined) {
     data[getPullRequestId()] = {};
-    data[getPullRequestId()]['files'] = {};
+    data[getPullRequestId()][filesStorageKey] = {};
     localStorage.setItem(localStorageKey, JSON.stringify(data));
   }
   return data;
 }
 
 function readFiles() {
-
+  return loadData()[getPullRequestId()][filesStorageKey];
 }
 
-function writeFiles() {
-
+function writeFiles(files) {
+  var data = loadData();
+  data[getPullRequestId()][filesStorageKey] = files;
+  localStorage.setItem(localStorageKey, JSON.stringify(data));
 }
 
 /**

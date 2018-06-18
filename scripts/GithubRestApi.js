@@ -1,9 +1,9 @@
-function callAjax(url, callback){
+function callAjax(url, callback) {
     var xmlhttp;
     // compatible with IE7+, Firefox, Chrome, Opera, Safari
     xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function(){
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             callback(xmlhttp.responseText);
             return xmlhttp.responseText;
         } else if (xmlhttp.readyState == 4 && xmlhttp.status != 200) {
