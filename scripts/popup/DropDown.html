@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+    transition: 0.4s;
+}
+
+.active, .accordion:hover {
+    background-color: #ccc;
+}
+
+.accordion:after {
+    content: '\002B';
+    color: #777;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+.active:after {
+    content: "\2212";
+}
+
+.panel {
+    padding: 0 18px;
+    background-color: white;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+}
+</style>
+</head>
+<body>
+
+  <div class="outer-wrapper">
+    <button class="accordion">docs</button>
+    <div class="docs panel">
+      <button class="accordion">docs</button>
+      <div class="files-page">
+        <h2>files page</h2>
+        <p>There are many things you can do on the files pages</p>
+        <p>They Are ...</p>
+
+          <div class="complete-a-file">
+            <h3>complete a file</h3>
+            <p>You can click complete this will locally store that you have completed this file </p>
+          </div>
+          <div class="add-a-review">
+            <h3>add a review</h3>
+
+          </div>
+      </div>
+        <div class="conversation-page">
+          <h2>conversation page</h2>
+
+            <div class="comments">
+              <h3>comments</h3>
+
+            </div>
+            <div class="completion-percentages">
+              <h3>completion percentages</h3>
+
+            </div>
+
+        </div>
+    </div>
+  </div>
+
+<script>
+var acc = document.getElementsByClassName("accordion");
+var i;
+
+for (i = 0; i < acc.length; i++) {
+  acc[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var panel = this.nextElementSibling;
+    if (panel.style.maxHeight){
+      panel.style.maxHeight = null;
+    } else {
+      panel.style.maxHeight = panel.scrollHeight + "px";
+    }
+  });
+}
+</script>
+
+</body>
+</html>

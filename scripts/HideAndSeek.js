@@ -3,18 +3,18 @@ function whenReviewLoads(data) {
   JSON.parse(data).forEach(function(review) {
     var regex = /<!-- seeker = (.*) -->/;
     if (review.body.match(regex) != null) {
-      var newMeta = getMetaData("key", review.body)
+      var newMeta = getMetaData("key", review.body);
 
-      allMeta.set(newMeta.author, newMeta.files)
-      allMeta[newMeta.author] = newMeta.files
+      allMeta.set(newMeta.author, newMeta.files);
+      allMeta[newMeta.author] = newMeta.files;
     }
   });
 
   var reportEveryOne = document.querySelector('.HideAndSeekSpan.report-everyone');
   if (reportEveryOne != null) {
-    reportEveryOne.dataset.reviews = JSON.stringify(allMeta)
+    reportEveryOne.dataset.reviews = JSON.stringify(allMeta);
   }
-  renderGraphs()
+  renderGraphs();
 }
 
 function whenFilesLoad(files) {
@@ -83,15 +83,15 @@ function renderGraphs() {
         }
       });
 
-      var completeWidth = completedCount/totalCount;
-      var outdatedWidth = outdatedCount/totalCount;
+      var completeWidth = Math.floor(completedCount / totalCount * 100);
+      var outdatedWidth = Math.floor(outdatedCount / totalCount * 100);
       completeBar.style.display = "inline-block";
       outdatedBar.style.display = "inline-block";
 
-      completeBar.style.width = completeWidth * 100 + "%";
-      outdatedBar.style.width = outdatedWidth * 100 + "%";
-      completeBar.setAttribute("aria-label", name + " completed " + Math.floor(completeWidth * 100) + "%")
-      outdatedBar.setAttribute("aria-label", name + " has completed " + Math.floor(outdatedWidth * 100) + "% but file has been updated")
+      completeBar.style.width = completeWidth + "%";
+      outdatedBar.style.width = outdatedWidth + "%";
+      completeBar.setAttribute("aria-label", name + " completed " + completeWidth + "%");
+      outdatedBar.setAttribute("aria-label", name + " has completed " + outdatedWidth + "% but file has been updated");
 
       personReportdiv.appendChild(entireBar);
       everyonesReportDiv.appendChild(oneReportDiv)
@@ -136,16 +136,6 @@ function publishReview() {
       }
     }
   }
-}
-
-function metaData(key, json) {
-  return "<!-- " + key + " = " + JSON.stringify(json) + " -->";
-}
-
-function getMetaData(key, meta) {
-  var regex = /<!-- seeker = (.*) -->/;
-  var data = meta.match(regex)[1];
-  return JSON.parse(data);
 }
 
 function reportEveryone() {
@@ -199,12 +189,12 @@ function reportingBar() {
     entireBar.style.width = "100px"
     entireBar.style.backgroundColor = "#ddd"
     entireBar.style.height = "15px"
-    entireBar.classList.add("tooltipped")
-    entireBar.classList.add("tooltipped-nw")
+    entireBar.classList.add("tooltipped");
+    entireBar.classList.add("tooltipped-nw");
 
     var completeBar = document.createElement('span');
-    completeBar.style.height = "15px"
-    completeBar.style.backgroundColor = "#4CAF50"
+    completeBar.style.height = "15px";
+    completeBar.style.backgroundColor = "#4CAF50";
     completeBar.style.display = "inline-block";
 
     // var headerSpan = document.createElement('span');
@@ -212,7 +202,7 @@ function reportingBar() {
     reportSpan.appendChild(entireBar);
     // reportSpan.appendChild(headerSpan);
     entireBar.appendChild(completeBar);
-    tabnav.prepend(reportSpan)
+    tabnav.prepend(reportSpan);
 
     var files = loadData()[getPullRequestId()]["files"];
     // var fileHeaders = document.querySelectorAll('.file-header');
@@ -220,124 +210,25 @@ function reportingBar() {
     var totalCount = document.querySelector('#files_tab_counter').innerText;
     var width = completedCount/totalCount;
     completeBar.style.width = width * 100 + "%";
-    completeBar.classList.add("tooltipped")
-    completeBar.classList.add("tooltipped-nw")
-    completeBar.setAttribute("aria-label", "You have completed " + Math.floor(width * 100) + "% locally")
-    // completeBar.innerText = Math.floor(width * 100) + "%";
-    // completeBar.innerText = "You Completeion " + Math.floor(width * 100) + "%";
+    completeBar.classList.add("tooltipped");
+    completeBar.classList.add("tooltipped-nw");
+    completeBar.setAttribute("aria-label", "You have completed " + Math.floor(width * 100) + "% locally");
   }
 }
 
 function hasBeenUpdate(fileMap, fileHeader) {
-  var sha = getSha(fileHeader)
+  var sha = getSha(fileHeader);
   var filePath = fileHeader.attributes["data-path"];
   return fileMap[filePath.value] == sha;
-}
-
-function addExpandAllComments() {
-  var sideBar = document.querySelector('#partial-discussion-sidebar');
-  if(sideBar != null && sideBar.querySelector('.HideAndSeekSpan.Comment-Expander') == null) {
-    var commentButtonDiv = document.createElement('div');
-    var expandAllButton = document.createElement('button');
-    commentButtonDiv.className = 'discussion-sidebar-item HideAndSeekSpan Comment-Expander';
-
-    expandAllButton.innerText = "Expand All";
-    expandAllButton.className = "btn btn-sm"
-    expandAllButton.onclick = function() {
-      document.querySelectorAll('.js-comment-container.outdated-comment:not(.open)').forEach(function(comementDiv){
-        comementDiv.querySelector('.show-outdated-button').click();
-      });
-    };
-    var hideAllButton = document.createElement('button');
-    hideAllButton.innerText = "Hide All";
-    hideAllButton.className = "btn btn-sm"
-    hideAllButton.onclick = function() {
-      document.querySelectorAll('.js-comment-container.outdated-comment.open').forEach(function(comementDiv){
-        comementDiv.querySelector('.show-outdated-button').click();
-
-      });
-    };
-    commentButtonDiv.appendChild(expandAllButton);
-    commentButtonDiv.appendChild(hideAllButton);
-    sideBar.appendChild(commentButtonDiv);
-  }
 }
 
 
 //------------------Utils
 
-/**
- * The id for the storage
- */
-var localStorageKey = "seeker";
+
 
 //return the number for the pull request
-/**
- * Get an id for this pull request
- *
- * Information needed for unique id:
- *    which github instance is this on (host)
- *    The the org/author
- *    The Repo name
- *    The pull request number
- */
-function getPullRequestId() {
-  return window.location.hostname + window.location.pathname.replace("/files", "");
-}
 
-/**
- * Retreive the data for the plugin
- * should return a map in the structure
- * {
- *   "#9(PR#)": {
- *     "files": {
- *       "README.md" : sha...(commit)
- *     }
- *   }
- * }
-*/
-function loadData() {
-  var data = JSON.parse(localStorage.getItem(localStorageKey));
-  if(data == undefined) {
-    data = {};
-  }
-  if (data[getPullRequestId()] == undefined) {
-    data[getPullRequestId()] = {};
-    data[getPullRequestId()]['files'] = {};
-    localStorage.setItem(localStorageKey, JSON.stringify(data));
-  }
-  return data;
-}
-
-function readFiles() {
-
-}
-
-function writeFiles() {
-
-}
-
-//----------------------Unused utils
-// to be used when testing or when a setting page is created
-
-/**
- * Clear all files for all pull request from the storage
- */
-function clearAll() {
-  localStorage.removeItem(localStorageKey);
-}
-
-/**
- * Clear all completed files for this pull request from the storage
- */
-function clearPr() {
-  var map = loadData();
-  map[getPullRequestId()] = undefined;
-  localStorage.setItem(localStorageKey, JSON.stringify(map));
-  document.querySelectorAll('.HideAndSeek').forEach(function(checkBox) {
-    checkBox.checked = false;
-  });
-}
 
 //---------------------Complete button
 
@@ -347,7 +238,7 @@ function clearPr() {
  */
 function addCompleteAction(files, headers) {
   headers.forEach(function(header) {
-    addComppleteActionToHeader(header, files)
+    addComppleteActionToHeader(header, files);
   });
 }
 
@@ -359,7 +250,7 @@ function addComppleteActionToHeader(header, files) {
   }
   var filePath = header.attributes["data-path"].value
   var sha = getSha(header);
-  var checked = files[filePath] != undefined && hasBeenUpdate(files, header)
+  var checked = files[filePath] != undefined && hasBeenUpdate(files, header);
   action.appendChild(createCheckBox(filePath, sha, checked, files[filePath] != undefined && !hasBeenUpdate(files, header)));
 }
 
@@ -369,11 +260,11 @@ function addComppleteActionToHeader(header, files) {
  */
 function createCheckBox(filePath, sha, checked, updated) {
   var span = document.createElement('span');
-  span.classList.add('HideAndSeekSpan')
+  span.classList.add('HideAndSeekSpan');
   var label = document.createElement('label');
   var checkBox = document.createElement('input');
   checkBox.addEventListener( 'click', function() {
-    collapse(this.parentElement.parentElement.parentElement, this.checked)
+    collapse(this.parentElement.parentElement.parentElement, this.checked);
       if(this.checked) {
         completeFile(checkBox.dataset.filePath, checkBox.dataset.sha);
       } else {
@@ -388,10 +279,10 @@ function createCheckBox(filePath, sha, checked, updated) {
   label.innerText = "Completed";
   if (updated) {
     var emoji = document.createElement('span');
-    emoji.classList.add("tooltipped")
-    emoji.classList.add("tooltipped-nw")
-    emoji.setAttribute("alias", "thinking")
-    emoji.setAttribute("aria-label", "The has been updated since you last viewed it")
+    emoji.classList.add("tooltipped");
+    emoji.classList.add("tooltipped-nw");
+    emoji.setAttribute("alias", "thinking");
+    emoji.setAttribute("aria-label", "The has been updated since you last viewed it");
     emoji.innerHTML = "&#x1f914;";
     label.appendChild(emoji);
   }
@@ -432,7 +323,6 @@ function completeFile(fileName, sha) {
   map[getPullRequestId()]['files'][fileName] = sha;
   localStorage.setItem(localStorageKey, JSON.stringify(map));
 }
-
 
 /**
  * Remove the compelted file to the collection of comleted files stored
@@ -506,88 +396,3 @@ function initialize() {
     hideCompletedFiles(filesCompleted, fileHeaders);
   }
 }
-
-
-(function() {
-  "use strict";
-
-  // This following code is taken from
-  // https://github.com/thieman/github-selfies/blob/master/chrome/selfie.js
-  var allowedPaths = [
-    /github.com\/[\w\-]+\/[\w\-]+\/pull\/\d+/
-  ];
-
-  // Inject the code from fn into the page, in an IIFE.
-  function inject(fn) {
-    var script = document.createElement('script');
-    var parent = document.documentElement;
-    script.textContent = '('+ fn +')();';
-    parent.appendChild(script);
-    parent.removeChild(script);
-  }
-
-  // Post a message whenever history.pushState is called. GitHub uses
-  // pushState to implement page transitions without full page loads.
-  // This needs to be injected because content scripts run in a sandbox.
-  inject(function() {
-    var pushState = history.pushState;
-    history.pushState = function on_pushState() {
-      window.postMessage('extension:pageUpdated', '*');
-      return pushState.apply(this, arguments);
-    };
-    var replaceState = history.replaceState;
-    history.replaceState = function on_replaceState() {
-      window.postMessage('extension:pageUpdated', '*');
-      return replaceState.apply(this, arguments);
-    };
-  });
-
-  // Do something when the extension is loaded into the page,
-  // and whenever we push/pop new pages.
-  window.addEventListener("message", function(event) {
-    if (event.data === 'extension:pageUpdated') {
-      load();
-    }
-  });
-
-  window.addEventListener("popstate", load);
-  load();
-
-  // End of code from https://github.com/thieman/github-selfies/blob/master/chrome/selfie.js
-
-  function load() {
-    chrome.runtime.sendMessage({action: 'load'}, function(response) {
-      initialize();
-
-      var observer = new MutationObserver(function (mutations) {
-
-        mutations.forEach(function (mutation) {
-          var fileActionDiv = mutation.target.querySelector(".file-actions");
-          if (fileActionDiv != null) {
-            initialize();
-          }
-        });
-      });
-      var config = {
-        childList: true,
-        characterData: true,
-        subtree: true
-      };
-
-      // pass in the target node, as well as the observer options
-      var files = document.querySelector('#files');
-      if (files != null) {
-        observer.observe(files, config);
-      }
-    });
-  }
-
-  function any(array, predicate) {
-    for (var i = 0; i < array.length; i++) {
-      if (predicate(array[i])) {
-        return true;
-      }
-    }
-    return false;
-  }
-})();
