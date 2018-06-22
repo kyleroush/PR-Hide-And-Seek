@@ -389,6 +389,7 @@ function initialize() {
   reportingBar();
   addExpandAllComments()
   reportEveryone()
+  makeAllCommentsHideable()
   if (document.querySelector('#files') != null) {
     var filesCompleted = loadData()[getPullRequestId()]["files"];
     var fileHeaders = document.querySelectorAll('.file-header')
