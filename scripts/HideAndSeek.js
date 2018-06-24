@@ -265,6 +265,8 @@ function createCheckBox(filePath, sha, checked, updated) {
   var checkBox = document.createElement('input');
   checkBox.addEventListener( 'click', function() {
     collapse(this.parentElement.parentElement.parentElement, this.checked);
+    this.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.footer').querySelector('.complete-checkbox').checked = this.checked
+
       if(this.checked) {
         completeFile(checkBox.dataset.filePath, checkBox.dataset.sha);
       } else {
@@ -273,9 +275,9 @@ function createCheckBox(filePath, sha, checked, updated) {
   });
   checkBox.dataset.filePath = filePath;
   checkBox.dataset.sha = sha;
-  checkBox.querySelector('HideAndSeek');
   checkBox.type = "checkBox";
   checkBox.checked = checked;
+  checkBox.classList.add('complete-checkbox');
   label.innerText = "Completed";
   if (updated) {
     var emoji = document.createElement('span');
@@ -292,7 +294,7 @@ function createCheckBox(filePath, sha, checked, updated) {
 }
 
 function collapse(header, toHide) {
-  button = header.querySelector('.btn-octicon.p-1.pr-2.js-details-target');
+  var button = header.querySelector('.btn-octicon.p-1.pr-2.js-details-target');
   if (toHide == (button.attributes['aria-expanded'].value === 'true')) {
     button.click();
   }
@@ -381,6 +383,46 @@ function filterCompletedFiles(fileMap, headers) {
   return filteredFileHeaderList;
 }
 
+function importFooters(fileHeaders) {
+  fileHeaders.forEach(function(fileHeader) {
+    addFooter(fileHeader)
+  });
+}
+
+function onHide() {
+  var fileHeader = this.parentElement.parentElement
+  var bool = fileHeader.querySelector('.btn-octicon.p-1.pr-2.js-details-target').attributes['aria-expanded'].value === 'true';
+
+  fileHeader.parentElement.querySelectorAll('.btn-octicon.p-1.pr-2.js-details-target').forEach(function (b) {
+
+    b.attributes['aria-expanded'].value  = bool;
+
+  })
+};
+
+function addFooter(fileHeader) {
+  if (!fileHeader.querySelector('.footer')) {
+    var fileFooter = fileHeader.cloneNode(true);
+    fileFooter.querySelector('.btn-octicon.p-1.pr-2.js-details-target').querySelector('.Details-content--shown').classList.remove('Details-content--shown')
+
+    fileHeader.parentElement.appendChild(fileFooter);
+
+    fileFooter.querySelector('.HideAndSeekSpan').querySelector('input').onclick = function () {
+      //call the rootcheckbox
+      this.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector('.complete-checkbox').click()
+    }
+    //loop over all the buttons
+    fileHeader.parentElement.querySelectorAll('.btn-octicon.p-1.pr-2.js-details-target').forEach(function (octicon) {
+      octicon.onclick = onHide;
+    })
+
+    fileFooter.classList.add('Details--on');
+    fileFooter.classList.add('Details-content--shown');
+    fileFooter.classList.add('footer');
+    fileFooter.classList.add('HideAndSeek');
+  }
+}
+
 
 //----------------------- Start up
 // The function called on set up the plugin
@@ -394,6 +436,8 @@ function initialize() {
     var filesCompleted = loadData()[getPullRequestId()]["files"];
     var fileHeaders = document.querySelectorAll('.file-header')
     addCompleteAction(filesCompleted, fileHeaders);
+    importFooters(fileHeaders)
+
     hideCompletedFiles(filesCompleted, fileHeaders);
   }
 }
