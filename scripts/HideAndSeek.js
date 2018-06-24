@@ -401,7 +401,7 @@ function onHide() {
 };
 
 function addFooter(fileHeader) {
-  if (!fileHeader.querySelector('.footer')) {
+  if (!fileHeader.parentElement.querySelector('.footer')) {
     var fileFooter = fileHeader.cloneNode(true);
     fileFooter.querySelector('.btn-octicon.p-1.pr-2.js-details-target').querySelector('.Details-content--shown').classList.remove('Details-content--shown')
 
