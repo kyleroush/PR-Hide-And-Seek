@@ -398,16 +398,7 @@ function onHide() {
     b.attributes['aria-expanded'].value  = bool;
 
   })
-  // showFooter(bool, fileHeader.parentElement.querySelector('.footer'))
 };
-
-// function showFooter(bool, fileFooter) {
-//   if(bool) {
-//     fileFooter.style.display = "none"
-//   } else {
-//     fileFooter.style.display = "block"
-//   }
-// }
 
 function addFooter(fileHeader) {
   if (!fileHeader.querySelector('.footer')) {
