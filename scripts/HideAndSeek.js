@@ -434,7 +434,7 @@ function initialize() {
   makeAllCommentsHideable()
   if (document.querySelector('#files') != null) {
     var filesCompleted = loadData()[getPullRequestId()]["files"];
-    var fileHeaders = document.querySelectorAll('.file-header')
+    var fileHeaders = document.querySelectorAll('.file-header:not(.footer)')
     addCompleteAction(filesCompleted, fileHeaders);
     importFooters(fileHeaders)
 

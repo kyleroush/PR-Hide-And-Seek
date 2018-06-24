@@ -55,7 +55,8 @@
 
         mutations.forEach(function (mutation) {
           var fileActionDiv = mutation.target.querySelector(".file-actions");
-          if (fileActionDiv != null) {
+          var footer = mutation.target.querySelector(".footer");
+          if (fileActionDiv != null && footer == null) {
             initialize();
           }
         });
