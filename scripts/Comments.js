@@ -60,6 +60,8 @@ function addStatusSelect() {
 
   document.querySelectorAll('.file.js-comment-container.has-inline-notes').forEach(function(file) {
     var select = document.createElement('select');
+    select.classList.add('hide-and-seek');
+    select.classList.add('comment-status-select');
     getStatuses().forEach(function (status) {
       var option = document.createElement('option');
       option.value = status
@@ -68,15 +70,42 @@ function addStatusSelect() {
     });
 
     var status = ""
+    var commentWithStatus = ""
+    var lastComment = ""
     file.querySelectorAll('.review-comment').forEach(function(comment) {
-      status = statuses[comment.id]
-    })
+      if(statuses[comment.id]) {
+        commentWithStatus = comment.id
+        status = statuses[commentWithStatus]
+      }
+      lastComment = comment.id
+
+    });
     if (status) {
       selectItemByValue(select, status)
+      if (status == "todo") {
+        toExpandFileComment(file, true)
+      } else if (status == "resolved") {
+        if (lastComment == commentWithStatus) {
+          toExpandFileComment(file, false)
+
+        } else {
+          toExpandFileComment(file, true)
+
+        }
+      }
     }
-    select.onchange = onStatusChange
     file.querySelector('.file-header').appendChild(select)
-  })
+  });
+  document.querySelectorAll('.comment-status-select').forEach(function (select) {
+    select.onchange = onStatusChange
+  });
+}
+
+function toExpandFileComment(file, toExpand) {
+  if (file.classList.contains('open') != toExpand) {
+    file.classList.toggle('open')
+    file.classList.toggle('Details--on')
+  }
 }
 
 function selectItemByValue(elmnt, value){
