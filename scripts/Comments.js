@@ -99,6 +99,4 @@ function onStatusChange() {
   var statuses = readCommentStatus();
   statuses[id] = status;
   writeCommentStatus(statuses);
-  console.log(statuses);
-  // this.options[selectBox.selectedIndex].value;
 }
