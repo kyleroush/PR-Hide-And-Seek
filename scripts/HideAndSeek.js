@@ -432,6 +432,7 @@ function initialize() {
   addExpandAllComments()
   reportEveryone()
   makeAllCommentsHideable()
+  addStatusSelect();
   if (document.querySelector('#files') != null) {
     var filesCompleted = loadData()[getPullRequestId()]["files"];
     var fileHeaders = document.querySelectorAll('.file-header:not(.footer)')

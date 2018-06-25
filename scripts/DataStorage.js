@@ -3,6 +3,7 @@
  */
 var localStorageKey = "seeker";
 var filesStorageKey = "files";
+var commentStatusKey = "comementStatus";
 
 /**
  * Retreive the data for the plugin
@@ -22,8 +23,13 @@ function loadData() {
   }
   if (data[getPullRequestId()] == undefined) {
     data[getPullRequestId()] = {};
-    data[getPullRequestId()][filesStorageKey] = {};
     localStorage.setItem(localStorageKey, JSON.stringify(data));
+  }
+  if (data[getPullRequestId()][filesStorageKey] == undefined) {
+    data[getPullRequestId()][filesStorageKey] = {};
+  }
+  if (data[getPullRequestId()][commentStatusKey] == undefined) {
+    data[getPullRequestId()][commentStatusKey] = {};
   }
   return data;
 }
@@ -35,6 +41,16 @@ function readFiles() {
 function writeFiles(files) {
   var data = loadData();
   data[getPullRequestId()][filesStorageKey] = files;
+  localStorage.setItem(localStorageKey, JSON.stringify(data));
+}
+
+function readCommentStatus() {
+  return loadData()[getPullRequestId()][commentStatusKey];
+}
+
+function writeCommentStatus(files) {
+  var data = loadData();
+  data[getPullRequestId()][commentStatusKey] = files;
   localStorage.setItem(localStorageKey, JSON.stringify(data));
 }
 
