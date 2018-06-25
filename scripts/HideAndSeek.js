@@ -427,6 +427,7 @@ function addFooter(fileHeader) {
 //----------------------- Start up
 // The function called on set up the plugin
 function initialize() {
+  addStatusSelect();
   publishReview();
   reportingBar();
   addExpandAllComments()
