@@ -87,17 +87,17 @@ function addStatusSelect() {
       } else if (status == "resolved") {
         if (lastComment == commentWithStatus) {
           toExpandFileComment(file, false)
-
         } else {
           toExpandFileComment(file, true)
-
         }
       }
     }
-    file.querySelector('.file-header').appendChild(select)
+    if (file.querySelector('.file-header').querySelector('.comment-status-select') == null) {
+      file.querySelector('.file-header').appendChild(select)
+    }
   });
   document.querySelectorAll('.comment-status-select').forEach(function (select) {
-    select.onchange = onStatusChange
+    select.onchange = onStatusChange;
   });
 }
 
