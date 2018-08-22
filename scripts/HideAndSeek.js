@@ -427,10 +427,10 @@ function addFooter(fileHeader) {
 //----------------------- Start up
 // The function called on set up the plugin
 function initialize() {
-  publishReview();
-  reportingBar();
+  // publishReview();
+  // reportingBar();
   addExpandAllComments()
-  reportEveryone()
+  // reportEveryone()
   makeAllCommentsHideable()
   addStatusSelect();
   if (document.querySelector('#files') != null) {
